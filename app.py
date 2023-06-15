@@ -1,19 +1,14 @@
-from langchain import HuggingFacePipeline, PromptTemplate, LLMChain
+import os
+from langchain.llms import OpenAI
 
-# Load the GPT-4 model
-llm = HuggingFacePipeline.from_model_id(
-    model_id="gpt-4-model-id",  # Replace with the actual GPT-4 model ID
-    task="text-generation",
-    model_kwargs={"temperature": 0.8, "max_length": 200}
-)
+# Step 2: Set the OpenAI API Key
+os.environ["OPENAI_API_KEY"] = "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"
 
-# Define a basic prompt template
-template = "Question: {question} Answer: Let's think step by step."
-prompt = PromptTemplate(template=template, input_variables=["question"])
+# Step 3: Initialize the OpenAI Class
+llm = OpenAI(openai_api_key=os.getenv("OPENAI_API_KEY"))
 
-# Create an LLM chain with the prompt and the model
-llm_chain = LLMChain(prompt=prompt, llm=llm)
+# Step 4: Build a Language Model Application
+text = "What would be a good company name for a company that makes colorful socks?"
+response = llm(text)
 
-# Test the chatbot with a sample question
-question = "What did you learn last week?"
-print(llm_chain.run(question))
+print(response)
