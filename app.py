@@ -1,6 +1,10 @@
 import os
 from langchain.llms import OpenAI
 from dotenv import load_dotenv
+import logging
+
+# Set up logging
+logging.basicConfig(filename='app.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
 
 # Specify the path to the .env file
 dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
@@ -8,14 +12,16 @@ dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
 # Load the .env file
 load_dotenv(dotenv_path)
 
+# Set the OpenAI API Key
 api_key = os.getenv("OPENAI_API_KEY")
-print(f"API Key: {api_key}")  # print the API key to check if it's correctly loaded
 
 # Initialize the OpenAI Class
 llm = OpenAI(openai_api_key=api_key)
 
 # Build a Language Model Application
 text = "What would be a good company name for a company that makes colorful socks?"
-response = llm(text)
-
-print(response)
+try:
+    response = llm(text)
+    print(response)
+except Exception as e:
+    logging.error("Exception occurred", exc_info=True)
