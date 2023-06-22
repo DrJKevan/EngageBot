@@ -1,5 +1,6 @@
 # This is an example of integrating a LLM with streamlit
 import streamlit as st
+import os
 import openai
 import langchain
 from langchain.llms import OpenAI
@@ -18,9 +19,6 @@ from langchain import PromptTemplate
 # Streamlit Code
 st.set_page_config(page_title="Globalize Email", page_icon = ":robot:")
 st.header("Globalize Text")
-
-with st.sidebar:
-    openai_api_key = st.text_input('OpenAI API Key',key='langchain_search_api_key_openai')
 
 # LLM Code
 template = """
@@ -49,6 +47,8 @@ prompt = PromptTemplate(
     input_variables=["tone", "dialect", "email"],
     template = template,
 )
+
+openai_api_key = os.environ.get('OPENAI_API_KEY')
 
 def load_LLM():
     llm = OpenAI(openai_api_key=openai_api_key, temperature = .5)
