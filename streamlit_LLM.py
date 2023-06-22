@@ -1,18 +1,20 @@
 # This is an example of integrating a LLM with streamlit
-import os
 import streamlit as st
 from langchain.llms import OpenAI
 from langchain import PromptTemplate
-from dotenv import load_dotenv
+#from dotenv import load_dotenv
 
 # Specify the path to the .env file
-dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
+#dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
 
 # Load the .env file
-load_dotenv(dotenv_path)
+#load_dotenv(dotenv_path)
 
 # Set the OpenAI API Key
-api_key = os.getenv("OPENAI_API_KEY")
+#openai_api_key = os.getenv("OPENAI_API_KEY")
+
+with st.sidebar:
+    openai_api_key = st.text_input('OpenAI API Key',key='langchain_search_api_key_openai')
 
 # LLM Code
 template = """
@@ -43,7 +45,7 @@ prompt = PromptTemplate(
 )
 
 def load_LLM():
-    llm = OpenAI(openai_api_key=api_key, temperature = .5)
+    llm = OpenAI(openai_api_key=openai_api_key, temperature = .5)
     return llm
 
 llm = load_LLM()
