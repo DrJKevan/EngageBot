@@ -90,8 +90,8 @@ if email_input:
     prompt_with_email = prompt.format(tone = option_tone, dialect = option_dialect, email = email_input)
     
     # See full prompt
-    st.write(prompt_with_email)
+    #st.write(prompt_with_email)
 
-    #formatted_email = llm(prompt_with_email)
+    formatted_email = llm(prompt_with_email)
 
-    #st.write(formatted_email)
+    st.write(formatted_email)
