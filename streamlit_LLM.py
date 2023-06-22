@@ -15,6 +15,10 @@ from langchain import PromptTemplate
 # Set the OpenAI API Key
 #openai_api_key = os.getenv("OPENAI_API_KEY")
 
+# Streamlit Code
+st.set_page_config(page_title="Globalize Email", page_icon = ":robot:")
+st.header("Globalize Text")
+
 with st.sidebar:
     openai_api_key = st.text_input('OpenAI API Key',key='langchain_search_api_key_openai')
 
@@ -46,15 +50,11 @@ prompt = PromptTemplate(
     template = template,
 )
 
-#def load_LLM():
-#    llm = OpenAI(openai_api_key=openai_api_key, temperature = .5)
-#    return llm
+def load_LLM():
+    llm = OpenAI(openai_api_key=openai_api_key, temperature = .5)
+    return llm
 
-#llm = load_LLM()
-
-# Streamlit Code
-st.set_page_config(page_title="Globalize Email", page_icon = ":robot:")
-st.header("Globalize Text")
+llm = load_LLM()
 
 col1, col2 = st. columns(2)
 
