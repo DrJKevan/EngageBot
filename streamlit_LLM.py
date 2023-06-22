@@ -1,5 +1,7 @@
 # This is an example of integrating a LLM with streamlit
 import streamlit as st
+import openai
+import langchain
 from langchain.llms import OpenAI
 from langchain import PromptTemplate
 #from dotenv import load_dotenv
@@ -44,11 +46,11 @@ prompt = PromptTemplate(
     template = template,
 )
 
-def load_LLM():
-    llm = OpenAI(openai_api_key=openai_api_key, temperature = .5)
-    return llm
+#def load_LLM():
+#    llm = OpenAI(openai_api_key=openai_api_key, temperature = .5)
+#    return llm
 
-llm = load_LLM()
+#llm = load_LLM()
 
 # Streamlit Code
 st.set_page_config(page_title="Globalize Email", page_icon = ":robot:")
@@ -88,8 +90,8 @@ if email_input:
     prompt_with_email = prompt.format(tone = option_tone, dialect = option_dialect, email = email_input)
     
     # See full prompt
-    #st.write(prompt_with_email)
+    st.write(prompt_with_email)
 
-    formatted_email = llm(prompt_with_email)
+    #formatted_email = llm(prompt_with_email)
 
-    st.write(formatted_email)
+    #st.write(formatted_email)
