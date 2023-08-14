@@ -1,3 +1,6 @@
 langchain
 openai
 streamlit
+pypdf
+pinecone-client
+tiktoken
