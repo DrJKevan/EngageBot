@@ -4,3 +4,4 @@ streamlit
 pypdf
 pinecone-client
 tiktoken
+python-dotenv
