@@ -18,13 +18,13 @@ load_dotenv(dotenv_path)
 api_key = os.getenv("OPENAI_API_KEY")
 
 # Initialize the OpenAI Class
-llm = ChatOpenAI(openai_api_key=api_key, temperature=0)
+llm = ChatOpenAI(openai_api_key=api_key, temperature=0.2)
 
 # Initialize chatbot memory
 from langchain.memory import ConversationBufferMemory
 conversational_memory = ConversationBufferMemory(
     memory_key = "chat_history",
-    return_messages = True
+    return_messages = True,
 )
 
 # Define the input variables
@@ -35,9 +35,8 @@ input_variables = {
 
 # Define the prompt templates
 prompt_template = ChatPromptTemplate.from_messages([
-    ("system", "Your name is Sigma and you are an expert mentor for students who values self-regulated learning and its benefits for education. You will assist the student with reflecting on what they learned last week. Start by asking the student to summarize on what they learned last week on {topic_name}. Compare their response to the Exemplar provided by the instructor and provide feedback kind feedback reinforcing what they got correct and fixing misconceptions."),
+    ("system", "Your name is Sigma and you are an expert mentor for students who values self-regulated learning and its benefits for education. Your goal is to assist the student with reflecting on what they learned last week. Start by asking the student to summarize on what they learned last week on {topic_name} then provide helpful feedback on what they got right, what they might misunderstand, and what they missed. "),
     ("ai", "Hello {student_name}, it's a pleasure to talk to you. My name is Sigma! Today, let's review what you learned last week about {topic_name}. Are you ready to dive in?"),
-    #("human", "Now, here's a thought. I've been pondering over the role of technology in SRL. With all the digital tools available nowadays, learners can access a wealth of information. These tools have the potential to enhance SRL, offering tailored learning paths, instant feedback, and a vast array of resources. But there's a potential downside. With so much information at their fingertips, learners might become too reliant on these tools. So, there's this interesting challenge for educators: how to effectively blend SRL with the right dose of technology.."),
 ])
 
 # Prepare tools for bot
@@ -60,21 +59,38 @@ tools = [Exemplar()]
 # https://python.langchain.com/docs/modules/agents/agent_types/chat_conversation_agent.html
 from langchain.agents import initialize_agent
 
-agent = initialize_agent(
+# I don't think the prompt template is working here.
+# It looks like from the documentation that there isn't a prompt parameter for initialize_agent, either need to identify an alternative method or switch to a LLM
+# https://api.python.langchain.com/en/latest/agents/langchain.agents.initialize.initialize_agent.html#langchain.agents.initialize.initialize_agent
+# https://colab.research.google.com/github/pinecone-io/examples/blob/master/learn/generation/chatbots/conversational-agents/langchain-lex-agent.ipynb#scrollTo=-3z2E1rlOIr_
+sys_msg = "Your name is Sigma and you are an expert mentor for students who values self-regulated learning and its benefits for education. Your goal is to assist the student with reflecting on what they learned last week. Start by asking the student to summarize on what they learned last week on {topic_name} then provide helpful feedback on what they got right, what they might misunderstand, and what they missed. "
+
+engagebot = initialize_agent(
     agent='chat-conversational-react-description',
     tools=[],
     llm=llm,
     verbose=True,
     memory=conversational_memory,
-    prompt=prompt_template,
+    #prompt=prompt_template,
 )
+
+# Need to add passing in the topic_name and student_name parameter
+new_prompt = engagebot.agent.create_prompt(
+    # format sys_msg and pass it into system_message below
+    system_message = """Your name is Sigma and you are an expert mentor for students who values self-regulated learning and its benefits for education. Your goal is to assist the student with reflecting on what they learned last week. Start by asking the student to summarize on what they learned last week then provide helpful feedback on what they got right, what they might misunderstand, and what they missed.""",
+    tools=tools
+)
+
+engagebot.agent.llm_chain.prompt = new_prompt
+
+print(engagebot.agent.llm_chain.prompt.messages[0])
 
 # Define interface
 
 
 # Define run loop
-print(agent("I think self-regulated learning is about the speed at which the learner is able to learn."))
-
+#print(agent("Self-regulated learning looks at the concept of metacognition and motivation of students. In particular, it looks at motivation as an input into the process of the aforementioned concepts."))
+#engagebot.run(input="What is your goal in this conversation?")
 
 # Store conversation in memory
 #from langchain.memory import VectorStoreRetrieverMemory
