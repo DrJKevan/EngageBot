@@ -83,14 +83,15 @@ new_prompt = engagebot.agent.create_prompt(
 
 engagebot.agent.llm_chain.prompt = new_prompt
 
-print(engagebot.agent.llm_chain.prompt.messages[0])
 
+#print(engagebot.agent.llm_chain.prompt.messages[0])
 # Define interface
 
 
 # Define run loop
 #print(agent("Self-regulated learning looks at the concept of metacognition and motivation of students. In particular, it looks at motivation as an input into the process of the aforementioned concepts."))
 #engagebot.run(input="What is your goal in this conversation?")
+engagebot.run(input="Who is the owner of Twitter")
 
 # Store conversation in memory
 #from langchain.memory import VectorStoreRetrieverMemory
