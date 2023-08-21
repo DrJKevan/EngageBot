@@ -63,6 +63,7 @@ tools = [Exemplar()]
 from langchain.agents import initialize_agent
 
 # I don't think the prompt template is working here.
+
 # https://colab.research.google.com/github/pinecone-io/examples/blob/master/learn/generation/chatbots/conversational-agents/langchain-lex-agent.ipynb#scrollTo=-3z2E1rlOIr_
 sys_msg = "Your name is Sigma and you are an expert mentor for students who values self-regulated learning and its benefits for education. Your goal is to assist the student with reflecting on what they learned last week. Start by asking the student to summarize on what they learned last week on {topic_name} then provide helpful feedback on what they got right, what they might misunderstand, and what they missed. "
 
@@ -102,14 +103,8 @@ with col2:
 
 st.markdown("## Let's reflect on what we learned last week!")
 
-
-
-
-# Define run loop
-#print(agent("Self-regulated learning looks at the concept of metacognition and motivation of students. In particular, it looks at motivation as an input into the process of the aforementioned concepts."))
-#engagebot.run(input="What is your goal in this conversation?")
 def get_text():
-    input_text = st.text_area(label="", placeholder = "Reflection", key="reflection_input")
+    input_text = st.text_area(label="Reflection", placeholder = "Reflection", key="reflection_input")
     return input_text
 
 reflection_input = get_text()
@@ -119,7 +114,13 @@ st.markdown("### Your Reflection Feedback:")
 if reflection_input:
     #reflection_feedback = llm(reflection_input)
 
-    st.write(engagebot.run(input="Who is the owner of Twitter"))
+    st.write(reflection_input)
+
+
+# Define run loop
+#print(agent("Self-regulated learning looks at the concept of metacognition and motivation of students. In particular, it looks at motivation as an input into the process of the aforementioned concepts."))
+#engagebot.run(input="What is your goal in this conversation?")
+engagebot.run(input="Who is the owner of Twitter")
 
 # Store conversation in memory
 #from langchain.memory import VectorStoreRetrieverMemory
