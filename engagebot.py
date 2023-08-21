@@ -1,4 +1,5 @@
 import os
+import streamlit as st
 from langchain.chat_models import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
 from dotenv import load_dotenv
@@ -9,12 +10,16 @@ from langchain.schema import (
 
 
 # Specify the path to the .env file
-dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
+#dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
 
 # Load the .env file
-load_dotenv(dotenv_path)
+#load_dotenv(dotenv_path)
 
 # Set the OpenAI API Key
+# Use this line when working with Streamlit
+os.environ['OPENAI_API_KEY'] = st.secrets['OPENAI_API_KEY']
+
+# Use next line when pull from local .env file
 api_key = os.getenv("OPENAI_API_KEY")
 
 # Initialize the OpenAI Class
@@ -86,7 +91,7 @@ engagebot.agent.llm_chain.prompt = new_prompt
 
 #print(engagebot.agent.llm_chain.prompt.messages[0])
 # Define interface
-import streamlit as st
+
 
 # Streamlit Code
 st.set_page_config(page_title="Sigma - Learning Mentor", page_icon = ":robot:")
