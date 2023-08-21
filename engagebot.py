@@ -86,6 +86,34 @@ engagebot.agent.llm_chain.prompt = new_prompt
 
 #print(engagebot.agent.llm_chain.prompt.messages[0])
 # Define interface
+import streamlit as st
+
+# Streamlit Code
+st.set_page_config(page_title="Sigma - Learning Mentor", page_icon = ":robot:")
+st.header("Sigma - Learning Mentor")
+
+col1, col2 = st. columns(2)
+
+with col1:
+    st.markdown("This application is a demo of the SRL chatbot being developed between University of Arizona & University of Hawai'i")
+
+with col2:
+    st.markdown("Holder Space")
+
+st.markdown("## Let's reflect on what we learned last week!")
+
+def get_text():
+    input_text = st.text_area(label="", placeholder = "Reflection", key="reflection_input")
+    return input_text
+
+reflection_input = get_text()
+
+st.markdown("### Your Reflection Feedback:")
+
+if reflection_input:
+    #reflection_feedback = llm(reflection_input)
+
+    st.write(reflection_input)
 
 
 # Define run loop
@@ -100,4 +128,4 @@ engagebot.run(input="Who is the owner of Twitter")
 # Future improvements or experimentation
 # Serialization for better user experience: https://python.langchain.com/docs/modules/model_io/models/llms/streaming_llm
 # LLM inference quality, peformance, and token usage tracking through langsmith: https://docs.smith.langchain.com/
-# Guardrails for the conversation to keep it focused and safe for students: https://github.com/NVIDIA/NeMo-Guardrails
+# Guardrails for the conversation to keep it focused and safe for students. Some optionsinclude NVidia's - https://github.com/NVIDIA/NeMo-Guardrails and Guardrails.ai - https://docs.getguardrails.ai/
