@@ -60,13 +60,9 @@ class Exemplar (BaseTool):
 tools = [Exemplar()]
 
 # Define agent
-# Chains run through a redefined set of actions. We may fall back to that, but I prefer to work with an agent since I think that will be the ultimate solution.
-# https://python.langchain.com/docs/modules/agents/agent_types/chat_conversation_agent.html
 from langchain.agents import initialize_agent
 
 # I don't think the prompt template is working here.
-# It looks like from the documentation that there isn't a prompt parameter for initialize_agent, either need to identify an alternative method or switch to a LLM
-# https://api.python.langchain.com/en/latest/agents/langchain.agents.initialize.initialize_agent.html#langchain.agents.initialize.initialize_agent
 # https://colab.research.google.com/github/pinecone-io/examples/blob/master/learn/generation/chatbots/conversational-agents/langchain-lex-agent.ipynb#scrollTo=-3z2E1rlOIr_
 sys_msg = "Your name is Sigma and you are an expert mentor for students who values self-regulated learning and its benefits for education. Your goal is to assist the student with reflecting on what they learned last week. Start by asking the student to summarize on what they learned last week on {topic_name} then provide helpful feedback on what they got right, what they might misunderstand, and what they missed. "
 
@@ -76,7 +72,6 @@ engagebot = initialize_agent(
     llm=llm,
     verbose=True,
     memory=conversational_memory,
-    #prompt=prompt_template,
 )
 
 # Need to add passing in the topic_name and student_name parameter
@@ -107,6 +102,12 @@ with col2:
 
 st.markdown("## Let's reflect on what we learned last week!")
 
+
+
+
+# Define run loop
+#print(agent("Self-regulated learning looks at the concept of metacognition and motivation of students. In particular, it looks at motivation as an input into the process of the aforementioned concepts."))
+#engagebot.run(input="What is your goal in this conversation?")
 def get_text():
     input_text = st.text_area(label="", placeholder = "Reflection", key="reflection_input")
     return input_text
@@ -118,13 +119,7 @@ st.markdown("### Your Reflection Feedback:")
 if reflection_input:
     #reflection_feedback = llm(reflection_input)
 
-    st.write(reflection_input)
-
-
-# Define run loop
-#print(agent("Self-regulated learning looks at the concept of metacognition and motivation of students. In particular, it looks at motivation as an input into the process of the aforementioned concepts."))
-#engagebot.run(input="What is your goal in this conversation?")
-engagebot.run(input="Who is the owner of Twitter")
+    st.write(engagebot.run(input="Who is the owner of Twitter"))
 
 # Store conversation in memory
 #from langchain.memory import VectorStoreRetrieverMemory
