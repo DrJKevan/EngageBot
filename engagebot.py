@@ -86,41 +86,87 @@ engagebot.agent.llm_chain.prompt = new_prompt
 
 
 #print(engagebot.agent.llm_chain.prompt.messages[0])
-# Define interface
-
-
 # Streamlit Code
-st.set_page_config(page_title="Sigma - Learning Mentor", page_icon = ":robot:")
+st.set_page_config(page_title="Sigma - Learning Mentor", page_icon=":robot:")
+
+# Use consistent styling and layout
+background_color = "#f4f4f6"
+font_color = "#333"
+
+st.markdown(
+    f"""
+    <style>
+        body {{
+            background-color: {background_color};
+            color: {font_color};
+        }}
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
 st.header("Sigma - Learning Mentor")
 
-col1, col2 = st. columns(2)
+# Information and holder space
+col1, col2 = st.columns(2)
 
 with col1:
-    st.markdown("This application is a demo of the SRL chatbot being developed between University of Arizona & University of Hawai'i")
+    st.markdown("This application is a demo of the SRL chatbot being developed between University of Arizona & University of Hawai'i.")
 
 with col2:
-    st.markdown("Holder Space")
+    st.markdown("")
 
 st.markdown("## Let's reflect on what we learned last week!")
 
-def get_text():
-    input_text = st.text_area(label="Reflection", placeholder = "Reflection", key="reflection_input")
-    return input_text
+# Chat Window Styling
+chat_window_style = """
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    background-color: #fff;
+    padding: 10px;
+    height: 400px;
+    overflow-y: auto;
+    font-size: 16px;
+    font-family: Arial, sans-serif;
+"""
 
-reflection_input = get_text()
+response_style = """
+    border-radius: 5px;
+    background-color: #e1f3fd;
+    padding: 10px;
+    margin: 10px 0;
+    display: inline-block;
+"""
 
-st.markdown("### Your Reflection Feedback:")
+# Create an interactive chat window
+chat_column = st.empty()
 
-if reflection_input:
-    #reflection_feedback = llm(reflection_input)
+def append_chat_response(chat_window, user_input, bot_response):
+    return f"""{chat_window}
+    <div><b>You:</b> {user_input}</div>
+    <div style="{response_style}"><b>Sigma:</b> {bot_response}</div>
+    """
 
-    st.write(reflection_input)
+# Initial chat window content
+chat_content = "<div>Welcome to Sigma! Please reflect on what you learned last week, and I'll provide feedback.</div>"
+
+# Chat input
+reflection_input = st.text_input("Your Reflection:", key="reflection_input")
+
+if st.button("Send"):
+    # Here you can integrate the chatbot response
+    response = engagebot.run(reflection_input)
+    chat_content = append_chat_response(chat_content, reflection_input, response)
+    chat_column.markdown(f"<div style='{chat_window_style}'>{chat_content}</div>", unsafe_allow_html=True)
+else:
+    chat_column.markdown(f"<div style='{chat_window_style}'>{chat_content}</div>", unsafe_allow_html=True)
+
 
 
 # Define run loop
 #print(agent("Self-regulated learning looks at the concept of metacognition and motivation of students. In particular, it looks at motivation as an input into the process of the aforementioned concepts."))
 #engagebot.run(input="What is your goal in this conversation?")
-engagebot.run(input="Who is the owner of Twitter")
+#engagebot.run(input="Who is the owner of Twitter")
 
 # Store conversation in memory
 #from langchain.memory import VectorStoreRetrieverMemory
