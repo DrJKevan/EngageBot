@@ -3,6 +3,7 @@ import streamlit as st
 from langchain.chat_models import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
 from dotenv import load_dotenv
+from langchain.agents import initialize_agent
 from langchain.schema import (
     SystemMessage,
     HumanMessage
@@ -60,11 +61,6 @@ class Exemplar (BaseTool):
 tools = [Exemplar()]
 
 # Define agent
-from langchain.agents import initialize_agent
-
-# I don't think the prompt template is working here.
-
-# https://colab.research.google.com/github/pinecone-io/examples/blob/master/learn/generation/chatbots/conversational-agents/langchain-lex-agent.ipynb#scrollTo=-3z2E1rlOIr_
 sys_msg = "Your name is Sigma and you are an expert mentor for students who values self-regulated learning and its benefits for education. Your goal is to assist the student with reflecting on what they learned last week. Start by asking the student to summarize on what they learned last week on {topic_name} then provide helpful feedback on what they got right, what they might misunderstand, and what they missed. "
 
 engagebot = initialize_agent(
@@ -84,8 +80,6 @@ new_prompt = engagebot.agent.create_prompt(
 
 engagebot.agent.llm_chain.prompt = new_prompt
 
-
-#print(engagebot.agent.llm_chain.prompt.messages[0])
 # Streamlit Code
 st.set_page_config(page_title="Sigma - Learning Mentor", page_icon=":robot:")
 
@@ -164,15 +158,13 @@ else:
 
 
 # Define run loop
-#print(agent("Self-regulated learning looks at the concept of metacognition and motivation of students. In particular, it looks at motivation as an input into the process of the aforementioned concepts."))
-#engagebot.run(input="What is your goal in this conversation?")
-#engagebot.run(input="Who is the owner of Twitter")
 
 # Store conversation in memory
 #from langchain.memory import VectorStoreRetrieverMemory
 
 
-# Future improvements or experimentation
+# TODO 
 # Serialization for better user experience: https://python.langchain.com/docs/modules/model_io/models/llms/streaming_llm
 # LLM inference quality, peformance, and token usage tracking through langsmith: https://docs.smith.langchain.com/
 # Guardrails for the conversation to keep it focused and safe for students. Some optionsinclude NVidia's - https://github.com/NVIDIA/NeMo-Guardrails and Guardrails.ai - https://docs.getguardrails.ai/
+# Maintain chat history throughout the session
