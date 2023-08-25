@@ -9,6 +9,10 @@ from langchain.schema import (
     HumanMessage
 )
 
+# Hack to get multi-input tools working again.
+# See: https://github.com/langchain-ai/langchain/issues/3700#issuecomment-1568735481
+from langchain.agents.conversational_chat.base import ConversationalChatAgent
+ConversationalChatAgent._validate_tools = lambda *_, **__: ...
 
 # Specify the path to the .env file
 #dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
@@ -54,7 +58,7 @@ class Exemplar (BaseTool):
     name="Exemplar"
     description="Use this tool to receive the instructors example summary of last week's learning materials to compare against student reflections"
 
-    def _run(self):
+    def _run(args, kwargs):
         return "Self-regulated learning (SRL) is a multifaceted process that empowers learners to proactively control and manage their cognitive, metacognitive, and motivational processes in pursuit of learning objectives. Rooted in social-cognitive theory, SRL emphasizes the active role of learners in constructing knowledge, setting and monitoring goals, and employing strategies to optimize understanding. It posits that successful learners are not merely passive recipients of information but are actively involved in the learning process, making decisions about which strategies to employ, monitoring their understanding, and adjusting their efforts in response to feedback. Metacognition, a central component of SRL, involves awareness and regulation of one's own cognitive processes. Successful self-regulated learners are adept at planning their learning, employing effective strategies, monitoring their progress, and adjusting their approaches when necessary. These skills are crucial not only in formal educational settings but also in lifelong learning, as they enable individuals to adapt to evolving challenges and continuously acquire new knowledge and skills throughout their lives."
 
 
@@ -65,7 +69,7 @@ sys_msg = "Your name is Sigma and you are an expert mentor for students who valu
 
 engagebot = initialize_agent(
     agent='chat-conversational-react-description',
-    tools=[],
+    tools=tools,
     llm=llm,
     verbose=True,
     memory=conversational_memory,
