@@ -21,6 +21,8 @@ api_key = os.getenv("OPENAI_API_KEY")
 
 ## PREPARE DATASTORES
 # Initialize Pinecone
+# Dimensions = 1536
+# Metric - Cosine
 pinecone.init(
     api_key  = "7efbb05b-6bb7-4e89-bd90-116a7c06f679", # find at app.pinecone.io
     environment = "us-west4-gcp-free" # next to api key in console 
