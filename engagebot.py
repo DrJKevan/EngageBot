@@ -148,13 +148,13 @@ def append_chat_response(chat_window, user_input, bot_response):
     """
 
 # Initial chat window content
-chat_content = "<div>Welcome to Sigma! Please reflect on what you learned last week, and I'll provide feedback.</div>"
+chat_content = f'<div style="{response_style}"><b>Sigma:</b> Hello! My name is Sigma and I am here to help you reflect on what you learned last week. Do the best you can to summarize all of the learning materials you completed last week, and I will provide feedback.</div>'
 
-# Chat input
-reflection_input = st.text_input("Your Reflection:", key="reflection_input")
+# Chat input: Switching to a growing text area
+reflection_input = st.text_area("Reflection:", height=150, key="reflection_input")
 
 if st.button("Send"):
-    # Here you can integrate the chatbot response
+    # Integrate the chatbot response
     response = engagebot.run(reflection_input)
     chat_content = append_chat_response(chat_content, reflection_input, response)
     chat_column.markdown(f"<div style='{chat_window_style}'>{chat_content}</div>", unsafe_allow_html=True)
