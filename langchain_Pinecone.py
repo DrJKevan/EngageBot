@@ -56,11 +56,11 @@ docsearch = Pinecone.from_existing_index(index_name,embeddings)
 # docsearch = Chroma.from_documents(docs, embeddings)
 
 # Vector DB query example
-#query = "What is self-regulated learning?"
-# docs = docsearch.similarity_search(query)
-# print(len(docs))
-# print(docs[0])
-# print(docs[0].page_content)
+query = "What is self-regulated learning?"
+docs = docsearch.similarity_search(query)
+print(len(docs))
+print(docs[0])
+print(docs[0].page_content)
 
 # Need to compartmentalize the creation of the index.. or, create it here then comment out that line and use the existing index.
 # Multiple calls will create duplicate data in the index.
