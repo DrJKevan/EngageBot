@@ -44,10 +44,11 @@ input_variables = {
 }
 
 # Define the prompt templates
-prompt_template = ChatPromptTemplate.from_messages([
-    ("system", "Your name is Sigma and you are an expert mentor for students who values self-regulated learning and its benefits for education. Your goal is to assist the student with reflecting on what they learned last week. Start by asking the student to summarize on what they learned last week on {topic_name} then provide helpful feedback on what they got right, what they might misunderstand, and what they missed. "),
-    ("ai", "Hello {student_name}, it's a pleasure to talk to you. My name is Sigma! Today, let's review what you learned last week about {topic_name}. Are you ready to dive in?"),
-])
+# This is not currently being used as I was having issues importing it.
+# prompt_template = ChatPromptTemplate.from_messages([
+#    ("system", "Your name is Sigma and you are an expert mentor for students who values self-regulated learning and its benefits for education. Your goal is to assist the student with reflecting on what they learned last week. Start by asking the student to summarize on what they learned last week on {topic_name} then provide helpful feedback on what they got right, what they might misunderstand, and what they missed. "),
+#    ("ai", "Hello {student_name}, it's a pleasure to talk to you. My name is Sigma! Today, let's review what you learned last week about {topic_name}. Are you ready to dive in?"),
+#])
 
 # Prepare tools for bot
 # "Exemplar" - Ideal summary of last week's content provided by instructor. The bot should use this as a comparator for the student's reflection.
@@ -65,7 +66,13 @@ class Exemplar (BaseTool):
 tools = [Exemplar()]
 
 # Define agent
-sys_msg = "Your name is Sigma and you are an expert mentor for students who values self-regulated learning and its benefits for education. Your goal is to assist the student with reflecting on what they learned last week. Start by asking the student to summarize on what they learned last week on {topic_name} then provide helpful feedback on what they got right, what they might misunderstand, and what they missed. "
+sys_msg = """Your name is Sigma and you are an expert mentor for students who values self-regulated learning and its benefits for education. Your goal is to assist the student with reflecting on what they learned last week by taking the following steps:
+    1) Ask the student to summarize what they learned last week.
+    2) Identify any content that is missing, misunderstood or inaccurate.
+    3) Respond to the student with a positive mentoring tone and outline what they summarized correctly what they could approve on.
+
+    Explain your thinking as you go.
+    """
 
 engagebot = initialize_agent(
     agent='chat-conversational-react-description',
@@ -78,13 +85,7 @@ engagebot = initialize_agent(
 # Need to add passing in the topic_name and student_name parameter
 new_prompt = engagebot.agent.create_prompt(
     # format sys_msg and pass it into system_message below
-    system_message = """Your name is Sigma and you are an expert mentor for students who values self-regulated learning and its benefits for education. Your goal is to assist the student with reflecting on what they learned last week by taking the following steps:
-    1) Ask the student to summarize what they learned last week.
-    2) Identify any content that is missing, misunderstood or inaccurate.
-    3) Respond to the student with a positive mentoring tone and outline what they summarized correctly what they could approve on.
-
-    Explain your thinking as you go.
-    """,
+    system_message = sys_msg
     tools=tools
 )
 
@@ -178,3 +179,6 @@ else:
 # LLM inference quality, peformance, and token usage tracking through langsmith: https://docs.smith.langchain.com/
 # Guardrails for the conversation to keep it focused and safe for students. Some optionsinclude NVidia's - https://github.com/NVIDIA/NeMo-Guardrails and Guardrails.ai - https://docs.getguardrails.ai/
 # Maintain chat history throughout the session
+
+# Notes for improving inference
+# The more text in the context, the more likely the LLM will forget the instructions
