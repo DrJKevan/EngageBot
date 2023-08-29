@@ -3,6 +3,7 @@ import streamlit as st
 from langchain.chat_models import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
 from dotenv import load_dotenv
+from langchain.prompts.chat import SystemMessagePromptTemplate
 from langchain.agents import initialize_agent
 from langchain.schema import (
     SystemMessage,
@@ -84,6 +85,33 @@ engagebot = initialize_agent(
 )
 # Need to add passing in the topic_name and student_name parameter
 #new_prompt = engagebot.agent.create_prompt(   system_message = sys_msg,  tools=tools)
+
+system_message = SystemMessagePromptTemplate(
+                prompt=PromptTemplate(
+                    input_variables=[],
+                    output_parser=None,
+                    partial_variables={},
+                    template=(
+                        'Assistant is a large language model trained by OpenAI.\n\n'
+                        'Assistant is designed to be able to assist with a wide range of tasks, from answering '
+                        'simple questions to providing in-depth explanations and discussions on a wide range of topics. '
+                        'As a language model, Assistant is able to generate human-like text based on the input it receives, '
+                        'allowing it to engage in natural-sounding conversations and provide responses that are coherent '
+                        'and relevant to the topic at hand.\n\n'
+                        'Assistant is constantly learning and improving, and its capabilities are constantly evolving. It is '
+                        'able to process and understand large amounts of text, and can use this knowledge to provide '
+                        'accurate and informative responses to a wide range of questions. Additionally, Assistant is able to '
+                        'generate its own text based on the input it receives, allowing it to engage in discussions and '
+                        'provide explanations and descriptions on a wide range of topics.\n\n'
+                        'Overall, Assistant is a powerful system that can help with a wide range of tasks and provide valuable '
+                        'insights and information on a wide range of topics. Whether you need help with a specific question or '
+                        'just want to have a conversation about a particular topic, Assistant is here to assist.'
+                    ),
+                    template_format='f-string',
+                    validate_template=True
+                ),
+                additional_kwargs={}
+            )
 
 #engagebot.agent.llm_chain.prompt = new_prompt
 

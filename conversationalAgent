@@ -115,3 +115,18 @@ llm_chain = LLMChain(
         "a json blob with a single action, and NOTHING else."
     )
 )
+
+from langchain.prompts.chat import SystemMessagePromptTemplate
+
+# Create a SystemMessagePromptTemplate with placeholders for variables
+template = "You are a {role} assistant that translates {input_language} to {output_language}."
+system_message_prompt = SystemMessagePromptTemplate.from_template(template)
+
+# Format the template with the variables
+formatted_message = system_message_prompt.format_prompt(role="helpful", input_language="English", output_language="French")
+
+# Access the llm_chain attribute of the agent
+llm_chain = agent.llm_chain
+
+# Replace the system message in messages[0] with the formatted message
+llm_chain.prompt.messages[0] = {"role": "system", "content": formatted_message}
