@@ -52,7 +52,6 @@ input_variables = {
 
 # Prepare tools for bot
 # "Exemplar" - Ideal summary of last week's content provided by instructor. The bot should use this as a comparator for the student's reflection.
-# "Learning Materials" - DB of vectorized learning materials from the prior week. The bot should reference these materials when providing feedback on the student reflection, referencing what content was covered in the learning materials, or what materials to review again to improve understanding.
 from langchain.tools import BaseTool
 
 class Exemplar (BaseTool):
@@ -62,7 +61,9 @@ class Exemplar (BaseTool):
     def _run(args, kwargs):
         return "Self-regulated learning (SRL) is a multifaceted process that empowers learners to proactively control and manage their cognitive, metacognitive, and motivational processes in pursuit of learning objectives. Rooted in social-cognitive theory, SRL emphasizes the active role of learners in constructing knowledge, setting and monitoring goals, and employing strategies to optimize understanding. It posits that successful learners are not merely passive recipients of information but are actively involved in the learning process, making decisions about which strategies to employ, monitoring their understanding, and adjusting their efforts in response to feedback. Metacognition, a central component of SRL, involves awareness and regulation of one's own cognitive processes. Successful self-regulated learners are adept at planning their learning, employing effective strategies, monitoring their progress, and adjusting their approaches when necessary. These skills are crucial not only in formal educational settings but also in lifelong learning, as they enable individuals to adapt to evolving challenges and continuously acquire new knowledge and skills throughout their lives."
 
+# "Learning Materials" - DB of vectorized learning materials from the prior week. The bot should reference these materials when providing feedback on the student reflection, referencing what content was covered in the learning materials, or what materials to review again to improve understanding.
 
+# Define tools
 tools = [Exemplar()]
 
 # Define agent
@@ -81,7 +82,6 @@ engagebot = initialize_agent(
     verbose=True,
     memory=conversational_memory,
 )
-
 # Need to add passing in the topic_name and student_name parameter
 #new_prompt = engagebot.agent.create_prompt(   system_message = sys_msg,  tools=tools)
 
