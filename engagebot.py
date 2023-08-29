@@ -83,13 +83,9 @@ engagebot = initialize_agent(
 )
 
 # Need to add passing in the topic_name and student_name parameter
-new_prompt = engagebot.agent.create_prompt(
-    # format sys_msg and pass it into system_message below
-    system_message = sys_msg,
-    tools=tools
-)
+#new_prompt = engagebot.agent.create_prompt(   system_message = sys_msg,  tools=tools)
 
-engagebot.agent.llm_chain.prompt = new_prompt
+#engagebot.agent.llm_chain.prompt = new_prompt
 
 # Streamlit Code
 st.set_page_config(page_title="Sigma - Learning Mentor", page_icon=":robot:")
