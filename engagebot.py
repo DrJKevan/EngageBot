@@ -85,7 +85,7 @@ engagebot = initialize_agent(
 # Need to add passing in the topic_name and student_name parameter
 new_prompt = engagebot.agent.create_prompt(
     # format sys_msg and pass it into system_message below
-    system_message = sys_msg
+    system_message = sys_msg,
     tools=tools
 )
 
