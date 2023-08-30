@@ -2,8 +2,9 @@ import os
 import streamlit as st
 from langchain.chat_models import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
-from dotenv import load_dotenv
 from langchain.prompts.chat import SystemMessagePromptTemplate
+from langchain import PromptTemplate
+from dotenv import load_dotenv
 from langchain.agents import initialize_agent
 from langchain.schema import (
     SystemMessage,
@@ -67,15 +68,7 @@ class Exemplar (BaseTool):
 # Define tools
 tools = [Exemplar()]
 
-# Define agent
-sys_msg = """Your name is Sigma and you are an expert mentor for students who values self-regulated learning and its benefits for education. Your goal is to assist the student with reflecting on what they learned last week by taking the following steps:
-    1) Ask the student to summarize what they learned last week.
-    2) Identify any content that is missing, misunderstood or inaccurate.
-    3) Respond to the student with a positive mentoring tone and outline what they summarized correctly what they could approve on.
-
-    Explain your thinking as you go.
-    """
-
+# Initialize Agent
 engagebot = initialize_agent(
     agent='chat-conversational-react-description',
     tools=tools,
@@ -83,37 +76,27 @@ engagebot = initialize_agent(
     verbose=True,
     memory=conversational_memory,
 )
-# Need to add passing in the topic_name and student_name parameter
-#new_prompt = engagebot.agent.create_prompt(   system_message = sys_msg,  tools=tools)
 
-system_message = SystemMessagePromptTemplate(
+# Create template for system message to provide direction for the agent
+template = """Your name is Sigma and you are an expert mentor for students who values self-regulated learning and its benefits for education. Your goal is to assist the student with reflecting on what they learned last week by taking the following steps:
+    1) Ask the student to summarize what they learned last week.
+    2) Identify any content that is missing, misunderstood or inaccurate.
+    3) Respond to the student with a positive mentoring tone and outline what they summarized correctly what they could approve on.
+
+    Explain your thinking as you go.
+    """
+# Update the agent's system instructions
+engagebot.agent.llm_chain.prompt.messages[0] = SystemMessagePromptTemplate(
                 prompt=PromptTemplate(
                     input_variables=[],
                     output_parser=None,
                     partial_variables={},
-                    template=(
-                        'Assistant is a large language model trained by OpenAI.\n\n'
-                        'Assistant is designed to be able to assist with a wide range of tasks, from answering '
-                        'simple questions to providing in-depth explanations and discussions on a wide range of topics. '
-                        'As a language model, Assistant is able to generate human-like text based on the input it receives, '
-                        'allowing it to engage in natural-sounding conversations and provide responses that are coherent '
-                        'and relevant to the topic at hand.\n\n'
-                        'Assistant is constantly learning and improving, and its capabilities are constantly evolving. It is '
-                        'able to process and understand large amounts of text, and can use this knowledge to provide '
-                        'accurate and informative responses to a wide range of questions. Additionally, Assistant is able to '
-                        'generate its own text based on the input it receives, allowing it to engage in discussions and '
-                        'provide explanations and descriptions on a wide range of topics.\n\n'
-                        'Overall, Assistant is a powerful system that can help with a wide range of tasks and provide valuable '
-                        'insights and information on a wide range of topics. Whether you need help with a specific question or '
-                        'just want to have a conversation about a particular topic, Assistant is here to assist.'
-                    ),
+                    template= template,
                     template_format='f-string',
                     validate_template=True
                 ),
                 additional_kwargs={}
             )
-
-#engagebot.agent.llm_chain.prompt = new_prompt
 
 # Streamlit Code
 st.set_page_config(page_title="Sigma - Learning Mentor", page_icon=":robot:")
@@ -183,12 +166,25 @@ chat_content = f'<div style="{response_style}"><b>Sigma:</b> Hello! My name is S
 reflection_input = st.text_area("Reflection:", height=150, key="reflection_input")
 
 if st.button("Send"):
-    # Integrate the chatbot response
-    response = engagebot.run(reflection_input)
+    try:
+        # Attempt to get a response from the chatbot
+        response = engagebot.run(reflection_input)
+    except ValueError as e:
+        response = str(e)
+        
+        # Only handle specific errors related to LLM output parsing
+        # Hacky incomplete solution... the response is coming and correct, but there is a parsing error that seems to be related to the agent's ability to access a tool
+        if response.startswith("Could not parse LLM output: `"):
+            response = response.removeprefix("Could not parse LLM output: `").removesuffix("`")
+        else:
+            raise e
+    
+    # Append the chatbot's response to the chat content
     chat_content = append_chat_response(chat_content, reflection_input, response)
-    chat_column.markdown(f"<div style='{chat_window_style}'>{chat_content}</div>", unsafe_allow_html=True)
-else:
-    chat_column.markdown(f"<div style='{chat_window_style}'>{chat_content}</div>", unsafe_allow_html=True)
+
+# Render the chat content
+chat_column.markdown(f"<div style='{chat_window_style}'>{chat_content}</div>", unsafe_allow_html=True)
+
 
 
 
