@@ -75,6 +75,7 @@ engagebot = initialize_agent(
     llm=llm,
     verbose=True,
     memory=conversational_memory,
+    handle_parsing_errors = True,
 )
 
 # Create template for system message to provide direction for the agent
@@ -85,6 +86,7 @@ template = """Your name is Sigma and you are an expert mentor for students who v
 
     Explain your thinking as you go.
     """
+
 # Update the agent's system instructions
 engagebot.agent.llm_chain.prompt.messages[0] = SystemMessagePromptTemplate(
                 prompt=PromptTemplate(
@@ -166,32 +168,12 @@ chat_content = f'<div style="{response_style}"><b>Sigma:</b> Hello! My name is S
 reflection_input = st.text_area("Reflection:", height=150, key="reflection_input")
 
 if st.button("Send"):
-    try:
-        # Attempt to get a response from the chatbot
-        response = engagebot.run(reflection_input)
-    except ValueError as e:
-        response = str(e)
-        
-        # Only handle specific errors related to LLM output parsing
-        # Hacky incomplete solution... the response is coming and correct, but there is a parsing error that seems to be related to the agent's ability to access a tool
-        if response.startswith("Could not parse LLM output: `"):
-            response = response.removeprefix("Could not parse LLM output: `").removesuffix("`")
-        else:
-            raise e
-    
-    # Append the chatbot's response to the chat content
+    # Integrate the chatbot response
+    response = engagebot.run(reflection_input)
     chat_content = append_chat_response(chat_content, reflection_input, response)
-
-# Render the chat content
-chat_column.markdown(f"<div style='{chat_window_style}'>{chat_content}</div>", unsafe_allow_html=True)
-
-
-
-
-# Define run loop
-
-# Store conversation in memory
-#from langchain.memory import VectorStoreRetrieverMemory
+    chat_column.markdown(f"<div style='{chat_window_style}'>{chat_content}</div>", unsafe_allow_html=True)
+else:
+    chat_column.markdown(f"<div style='{chat_window_style}'>{chat_content}</div>", unsafe_allow_html=True)
 
 
 # TODO 
@@ -199,6 +181,9 @@ chat_column.markdown(f"<div style='{chat_window_style}'>{chat_content}</div>", u
 # LLM inference quality, peformance, and token usage tracking through langsmith: https://docs.smith.langchain.com/
 # Guardrails for the conversation to keep it focused and safe for students. Some optionsinclude NVidia's - https://github.com/NVIDIA/NeMo-Guardrails and Guardrails.ai - https://docs.getguardrails.ai/
 # Maintain chat history throughout the session
+# Fix 'Could not parse LLM Output' error that is curently being handled automatically on via parameter in agent initialization. This appears to slightly impact performance, but not quality of inference. Some potential conversation to help find the solution:
+# https://github.com/langchain-ai/langchain/pull/1707
+# https://github.com/langchain-ai/langchain/issues/1358
 
 # Notes for improving inference
 # The more text in the context, the more likely the LLM will forget the instructions
