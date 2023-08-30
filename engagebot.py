@@ -177,6 +177,7 @@ else:
 
 
 # TODO 
+# Add chat history using streamlit: https://docs.streamlit.io/knowledge-base/tutorials/build-conversational-apps
 # Serialization for better user experience: https://python.langchain.com/docs/modules/model_io/models/llms/streaming_llm
 # LLM inference quality, peformance, and token usage tracking through langsmith: https://docs.smith.langchain.com/
 # Guardrails for the conversation to keep it focused and safe for students. Some optionsinclude NVidia's - https://github.com/NVIDIA/NeMo-Guardrails and Guardrails.ai - https://docs.getguardrails.ai/
