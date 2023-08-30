@@ -7,7 +7,9 @@ Human Chat = "Last week I read about self-regulated learning. I think it's a pro
 AI Response = "Hi there! I'm Sigma, your mentor for self-regulated learning. Great job on reading about the topic last week! Self-regulated learning is indeed a process that students can implement to control and optimize their learning experience. However, it's not solely about controlling the speed of learning. It encompasses a broader set of strategies and skills that students use to take charge of their own learning process.\n\nSelf-regulated learning involves students actively monitoring and managing their learning process, setting goals, selecting appropriate strategies, and evaluating their progress. It also includes being aware of one's strengths and weaknesses, as well as being able to adapt and adjust strategies based on feedback and challenges encountered.\n\nWhile self-regulated learning can involve managing the pace of learning, it also involves being proactive in seeking out resources, managing time effectively, and employing effective study techniques. It's about taking ownership of one's learning and being able to make informed decisions to enhance learning outcomes.\n\nIf you have any specific questions or would like to delve deeper into any aspect of self-regulated learning, feel free to ask!"
 
 
+----------------------------------------
 Example w/ Hallucination (8/30/23) 
+----------------------------------------
 > Entering new AgentExecutor chain...
 {
     "action": "Exemplar",
@@ -18,3 +20,6 @@ Thought:{
     "action": "Final Answer",
     "action_input": "Based on your summary, it seems like you have a good understanding of the main components of self-regulated learning (SRL) according to Zimmerman's model. You mentioned that SRL involves reflection, planning, and execution, which is correct. However, there are a few points that could be improved upon. Firstly, Zimmerman's model actually includes four steps: forethought, performance, self-reflection, and self-regulation. The forethought phase involves setting goals and developing a plan, while the performance phase involves executing the plan and monitoring progress. The self-reflection phase involves evaluating one's performance and the self-regulation phase involves making adjustments and adapting strategies as needed. Additionally, SRL concepts are not limited to western culture. While cultural factors may influence the specific strategies and approaches used in SRL, the underlying principles of self-regulation can be applied universally. Overall, your understanding of SRL is on the right track, and with a bit more detail and accuracy, you will have a comprehensive grasp of the topic."
 }
+
+*** The hallucination is that Zimmerman's model does not include a 4th phase called 'self-regulation'.
+
