@@ -119,18 +119,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-st.header("Sigma - Learning Mentor")
-
-# Information and holder space
-col1, col2 = st.columns(2)
-
-with col1:
-    st.markdown("This application is a demo of the SRL chatbot being developed between University of Arizona & University of Hawai'i.")
-
-with col2:
-    st.markdown("")
-
-st.markdown("## Let's reflect on what we learned last week!")
+st.title("Sigma - Learning Mentor")
 
 # Chat Window Styling
 chat_window_style = """
@@ -152,32 +141,34 @@ response_style = """
     display: inline-block;
 """
 
-# Create an interactive chat window
-chat_column = st.empty()
+# Set a default model
+if "openai_model" not in st.session_state:
+  st.session_state["openai_model"] = "gpt-3.5-turbo"
+  
+# Initialize chat history
+if "messages" not in st.session_state:
+  st.session_state.messages = [{"role": "assistant", "content": "Hello! My name is Sigma and I am here to help you reflect on what you learned last week. Do the best you can to summarize all of the learning materials you completed last week, and I will provide feedback."}]
+  
+# Display chat messages from history on app rerun
+for message in st.session_state.messages:
+  with st.chat_message(message["role"]):
+    st.markdown(message["content"])
 
-def append_chat_response(chat_window, user_input, bot_response):
-    return f"""{chat_window}
-    <div><b>You:</b> {user_input}</div>
-    <div style="{response_style}"><b>Sigma:</b> {bot_response}</div>
-    """
-
-# Initial chat window content
-chat_content = f'<div style="{response_style}"><b>Sigma:</b> Hello! My name is Sigma and I am here to help you reflect on what you learned last week. Do the best you can to summarize all of the learning materials you completed last week, and I will provide feedback.</div>'
-
-# Chat input: Switching to a growing text area
-reflection_input = st.text_area("Reflection:", height=150, key="reflection_input")
-
-if st.button("Send"):
-    # Integrate the chatbot response
-    response = engagebot.run(reflection_input)
-    chat_content = append_chat_response(chat_content, reflection_input, response)
-    chat_column.markdown(f"<div style='{chat_window_style}'>{chat_content}</div>", unsafe_allow_html=True)
-else:
-    chat_column.markdown(f"<div style='{chat_window_style}'>{chat_content}</div>", unsafe_allow_html=True)
-
+# Accept user input
+if prompt := st.chat_input("What is up?"):
+  # Add user message to chat history
+  st.session_state.messages.append({"role":"user", "content":prompt})
+  # Display user message in chat message container
+  with st.chat_message("user"):
+    st.markdown(prompt)
+  # Display assistant response in chat message container
+  with st.chat_message("assistant"):
+    message_placeholder = st.empty()
+    response = engagebot.run(prompt)
+    message_placeholder.markdown(response)
+  st.session_state.messages.append({"role": "assistant", "content": response})
 
 # TODO 
-# Add chat history using streamlit: https://docs.streamlit.io/knowledge-base/tutorials/build-conversational-apps
 # Serialization for better user experience: https://python.langchain.com/docs/modules/model_io/models/llms/streaming_llm
 # LLM inference quality, peformance, and token usage tracking through langsmith: https://docs.smith.langchain.com/
 # Guardrails for the conversation to keep it focused and safe for students. Some optionsinclude NVidia's - https://github.com/NVIDIA/NeMo-Guardrails and Guardrails.ai - https://docs.getguardrails.ai/
