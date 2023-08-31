@@ -45,13 +45,6 @@ input_variables = {
     "topic_name": "Self-regulated learning"
 }
 
-# Define the prompt templates
-# This is not currently being used as I was having issues importing it.
-# prompt_template = ChatPromptTemplate.from_messages([
-#    ("system", "Your name is Sigma and you are an expert mentor for students who values self-regulated learning and its benefits for education. Your goal is to assist the student with reflecting on what they learned last week. Start by asking the student to summarize on what they learned last week on {topic_name} then provide helpful feedback on what they got right, what they might misunderstand, and what they missed. "),
-#    ("ai", "Hello {student_name}, it's a pleasure to talk to you. My name is Sigma! Today, let's review what you learned last week about {topic_name}. Are you ready to dive in?"),
-#])
-
 # Prepare tools for bot
 # "Exemplar" - Ideal summary of last week's content provided by instructor. The bot should use this as a comparator for the student's reflection.
 from langchain.tools import BaseTool
@@ -172,7 +165,6 @@ if prompt := st.chat_input("What is up?"):
 # Serialization for better user experience: https://python.langchain.com/docs/modules/model_io/models/llms/streaming_llm
 # LLM inference quality, peformance, and token usage tracking through langsmith: https://docs.smith.langchain.com/
 # Guardrails for the conversation to keep it focused and safe for students. Some optionsinclude NVidia's - https://github.com/NVIDIA/NeMo-Guardrails and Guardrails.ai - https://docs.getguardrails.ai/
-# Maintain chat history throughout the session
 # Fix 'Could not parse LLM Output' error that is curently being handled automatically on via parameter in agent initialization. This appears to slightly impact performance, but not quality of inference. Some potential conversation to help find the solution:
 # https://github.com/langchain-ai/langchain/pull/1707
 # https://github.com/langchain-ai/langchain/issues/1358
