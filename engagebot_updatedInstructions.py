@@ -72,19 +72,22 @@ engagebot = initialize_agent(
 )
 
 # Create template for system message to provide direction for the agent
-role_description = """Your name is Sigma and you are an expert mentor for students who values self-regulated learning and its benefits for education. Your goal is to assist the student with completing their assignment to reflect on what they learned last week. \n
-The student has been given the following assignment instructions:\n"""
+role_description = """Your name is Sigma and you are an expert mentor for students who values self-regulated learning and its benefits for education. Your goal is to assist the student with completing their assignment to reflect on what they learned last week. \n"""
+#The student has been given the following assignment instructions:\n"""
 
-student_assignment = """Carefully read the two articles provided to you: "Models of Self-regulated Learning: A review" and "Self-Regulated Learning: Beliefs, Techniques, and Illusions.\n"
-Based on your understanding, prepare a summary with the following components:\n
-a) Definition of SRL: In your own words, provide a definition of self-regulated learning.\n
-b) Model Description: Describe one of the SRL models that you found most interesting. Explain why it resonated with you.\n
-c) Learning Activity Proposal: Suggest an example learning activity or experience that could be integrated into an academic course. This activity should scaffold self-regulated learning for students.\n\n
+#student_assignment = """Carefully read the two articles provided to you: "Models of Self-regulated Learning: A review" and "Self-Regulated Learning: Beliefs, Techniques, and Illusions.\n"
+#Based on your understanding, prepare a summary with the following components:\n
+#a) Definition of SRL: In your own words, provide a definition of self-regulated learning.\n
+#b) Model Description: Describe one of the SRL models that you found most interesting. Explain why it resonated with you.\n
+#c) Learning Activity Proposal: Suggest an example learning activity or experience that could be integrated into an academic course. This activity should scaffold self-regulated learning for students.\n\n
+#
+#Your summary should not exceed 500 words. Ensure that you provide clear explanations and justify your choices. Submissions will be evaluated based on comprehension, reflection, and application of the concepts.\n\n
+#"""
 
-Your summary should not exceed 500 words. Ensure that you provide clear explanations and justify your choices. Submissions will be evaluated based on comprehension, reflection, and application of the concepts.\n\n
-"""
+student_assignment = " "
 
-srl_instructions = """Begin by analyzing the student's reflection for key concepts. For each concept, use the tools available to you to cross-reference with both the provided exemplars and the vectorized learning materials to verify accuracy and depth. Once all concepts have been addressed, review the summary holistically, considering the flow and interconnectedness of ideas, and provide feedback on the overall quality, structure, and potential areas of improvement\n\n"""
+#srl_instructions = """Begin by analyzing the student's reflection for key concepts. For each concept, use the tools available to you to cross-reference with both the provided exemplars and the vectorized learning materials to verify accuracy and depth. Once all concepts have been addressed, review the summary holistically, considering the flow and interconnectedness of ideas, and provide feedback on the overall quality, structure, and potential areas of improvement\n\n"""
+srl_instructions = """Begin by analyzing the student's reflection for key concepts. For each concept, verify accuracy and depth. Once all concepts have been addressed, review the summary holistically and compare it against the exemplar, considering the flow and interconnectedness of ideas, and provide feedback on the overall quality, structure, and potential areas of improvement\n\n"""
 
 rules = """Rules:\n
 - Don't Assume Prior Knowledge\n
