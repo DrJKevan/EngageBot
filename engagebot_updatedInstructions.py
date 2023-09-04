@@ -87,28 +87,12 @@ role_description = """Your name is Sigma and you are an expert mentor for studen
 student_assignment = " "
 
 #srl_instructions = """Begin by analyzing the student's reflection for key concepts. For each concept, use the tools available to you to cross-reference with both the provided exemplars and the vectorized learning materials to verify accuracy and depth. Once all concepts have been addressed, review the summary holistically, considering the flow and interconnectedness of ideas, and provide feedback on the overall quality, structure, and potential areas of improvement\n\n"""
-srl_instructions = """Begin by analyzing the student's reflection for key concepts. For each concept, verify accuracy and depth. Once all concepts have been addressed, review the summary holistically and compare it against the exemplar, considering the flow and interconnectedness of ideas, and provide feedback on the overall quality, structure, and potential areas of improvement\n\n"""
+srl_instructions = """Begin by analyzing key concepts in the student's submission for accuracy and depth. Then compare the submission against an exemplar using your exemplar tool. Finally, merging your review of the concepts and the exemplar comparison to produce feedback for the student on the overall quality, structure, and potential areas of improvement\n\n"""
 
 rules = """Rules:\n
-- Don't Assume Prior Knowledge\n
-The LLM should not assume that the student has prior knowledge of specific terms or concepts unless explicitly stated in the learning materials or reflection.\n
-Avoid drawing conclusions about the student's motivation, attitude, or emotional state based on their reflection.\n\n
-
-- Avoid Overgeneralization\n
-Avoid using vague or overly general feedback that may not be actionable. Feedback should be specific and tailored to the individual reflection.\n
-While exemplars serve as a standard, the LLM shouldn't assume they cover all possible correct or relevant responses. Students may offer valid perspectives not included in the exemplars.\n\n
-
-- Stay Within Scope\n
-The LLM should stick to the facts and guidelines presented in the learning materials and not offer subjective or personal opinions.\n
-The LLM should focus on the assignment at hand and not venture into correcting unrelated aspects like general academic skills unless they directly impact the quality of the reflection.\n\n
-
-- Maintain Ethical Boundaries\n
-Avoid asking the student for any personal information and remind them not to share personal information if they do so voluntarily \n
-The LLM should avoid making ethical or moral judgments about the student's viewpoints.\n\n
-
-- Be Mindful of Language\n
-Unless the jargon is directly pulled from the learning materials and is necessary for the feedback, keep the language simple and understandable.\n
-Frame feedback in a constructive manner, focusing on how the student can improve rather than what they did wrong.\n\n
+- If the student did not submit all parts of the assignment, encourage them to do so\n
+- Keep the conversation on task to complete the assignment\n
+- Use a friendly, supportive and conversational to
 """
 
 template = role_description + student_assignment + srl_instructions
@@ -174,7 +158,13 @@ if "openai_model" not in st.session_state:
   
 # Initialize chat history
 if "messages" not in st.session_state:
-  st.session_state.messages = [{"role": "assistant", "content": "Hello! My name is Sigma and I am here to help you reflect on what you learned last week. Do the best you can to summarize all of the learning materials you completed last week, and I will provide feedback."}]
+  st.session_state.messages = [{"role": "assistant", "content": """Hello! My name is Sigma and I am here to help you reflect on what you learned last week."""},{"role":"assistant","content":"""Your assignments is to carefully read the two articles provided to you: "Models of Self-regulated Learning: A review" and "Self-Regulated Learning: Beliefs, Techniques, and Illusions.\n"
+Based on your understanding, prepare the following answers in 500 words or less:\n
+a) Definition of SRL: In your own words, provide a definition of self-regulated learning.\n
+b) Model Description: Describe one of the SRL models that you found most interesting. Explain why it resonated with you.\n
+c) Learning Activity Proposal: Suggest an example learning activity or experience that could be integrated into an academic course. This activity should scaffold self-regulated learning for students.\n\n
+Go ahead and submit when you're ready!
+"""}]
   
 # Display chat messages from history on app rerun
 for message in st.session_state.messages:
