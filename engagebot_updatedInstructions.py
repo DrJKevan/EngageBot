@@ -55,11 +55,40 @@ class Exemplar (BaseTool):
 
     def _run(args, kwargs):
         return "Self-regulated learning (SRL) is a multifaceted process that empowers learners to proactively control and manage their cognitive, metacognitive, and motivational processes in pursuit of learning objectives. Rooted in social-cognitive theory, SRL emphasizes the active role of learners in constructing knowledge, setting and monitoring goals, and employing strategies to optimize understanding. It posits that successful learners are not merely passive recipients of information but are actively involved in the learning process, making decisions about which strategies to employ, monitoring their understanding, and adjusting their efforts in response to feedback. Metacognition, a central component of SRL, involves awareness and regulation of one's own cognitive processes. Successful self-regulated learners are adept at planning their learning, employing effective strategies, monitoring their progress, and adjusting their approaches when necessary. These skills are crucial not only in formal educational settings but also in lifelong learning, as they enable individuals to adapt to evolving challenges and continuously acquire new knowledge and skills throughout their lives."
+    
+class Assignment (BaseTool):
+    name="Assignment"
+    description="Use this tool to obtain the student's assignment"
+
+    def _run(args, kwargs):
+        return """Your assignments is to carefully read the two articles provided to you: "Models of Self-regulated Learning: A review" and "Self-Regulated Learning: Beliefs, Techniques, and Illusions.\n"
+        Based on your understanding, prepare the following answers in 500 words or less:\n
+        a) Definition of SRL: In your own words, provide a definition of self-regulated learning.\n
+        b) Model Description: Describe one of the SRL models that you found most interesting. Explain why it resonated with you.\n
+        c) Learning Activity Proposal: Suggest an example learning activity or experience that could be integrated into an academic course. This activity should scaffold self-regulated learning for students.\n\n
+        Go ahead and submit when you're ready!
+        """
 
 # "Learning Materials" - DB of vectorized learning materials from the prior week. The bot should reference these materials when providing feedback on the student reflection, referencing what content was covered in the learning materials, or what materials to review again to improve understanding.
 
 # Define tools
-tools = [Exemplar()]
+tools = [Exemplar(), Assignment()]
+
+FORMAT_INSTRUCTIONS = """To use a tool, please use the following format:
+
+\```
+Thought: Do I need to use a tool? Yes
+Action: the action to take, should be one of [{tool_names}]
+Action Input: the input to the action
+Observation: the result of the action
+\```
+
+When you have a response to say to the Human, or if you do not need to use a tool, you MUST use the following format(the prefix of "Thought: " and "{ai_prefix}: " are must be included):
+
+\```
+Thought: Do I need to use a tool? No
+{ai_prefix}: [your response here]
+\```"""
 
 # Initialize Agent
 engagebot = initialize_agent(
@@ -69,34 +98,25 @@ engagebot = initialize_agent(
     verbose=True,
     memory=conversational_memory,
     handle_parsing_errors = True,
+    agent_kwargs={"format_instructions": FORMAT_INSTRUCTIONS}
 )
 
 # Create template for system message to provide direction for the agent
-role_description = """Your name is Sigma and you are an expert mentor for students who values self-regulated learning and its benefits for education. Your goal is to assist the student with completing their assignment to reflect on what they learned last week. \n"""
-#The student has been given the following assignment instructions:\n"""
+role_description = """Your name is Sigma and you are a mentor for higher education students. Your goal to provide feedback to students on their assignments. Using the tools available to you, provide feedback to the user's assignment submission considering the assignment instructions and the exemplar available to you.\n\n"""
 
-#student_assignment = """Carefully read the two articles provided to you: "Models of Self-regulated Learning: A review" and "Self-Regulated Learning: Beliefs, Techniques, and Illusions.\n"
-#Based on your understanding, prepare a summary with the following components:\n
-#a) Definition of SRL: In your own words, provide a definition of self-regulated learning.\n
-#b) Model Description: Describe one of the SRL models that you found most interesting. Explain why it resonated with you.\n
-#c) Learning Activity Proposal: Suggest an example learning activity or experience that could be integrated into an academic course. This activity should scaffold self-regulated learning for students.\n\n
-#
-#Your summary should not exceed 500 words. Ensure that you provide clear explanations and justify your choices. Submissions will be evaluated based on comprehension, reflection, and application of the concepts.\n\n
-#"""
-
-student_assignment = " "
-
-#srl_instructions = """Begin by analyzing the student's reflection for key concepts. For each concept, use the tools available to you to cross-reference with both the provided exemplars and the vectorized learning materials to verify accuracy and depth. Once all concepts have been addressed, review the summary holistically, considering the flow and interconnectedness of ideas, and provide feedback on the overall quality, structure, and potential areas of improvement\n\n"""
-srl_instructions = """Begin by analyzing key concepts in the student's submission for accuracy and depth. Then compare the submission against an exemplar using your exemplar tool. Finally, merging your review of the concepts and the exemplar comparison to produce feedback for the student on the overall quality, structure, and potential areas of improvement\n\n"""
+analysis_instructions = """Once the student has subitted part or all of the assignment take the following steps:\n
+1) Compare the submission against the assignment and note what was missing.\n
+2) Compare the quality and depth of the submission against the exemplar.\n
+3) Produce feedback for overall quality, what was correct, and where it could be improved.\n
+4) In an encouraging and conversation tone share the results of the previous three steps in an integrated summary.\n\n"""
 
 rules = """Rules:\n
 - If the student did not submit all parts of the assignment, encourage them to do so\n
 - Keep the conversation on task to complete the assignment\n
-- Use a friendly, supportive and conversational to
 """
 
-template = role_description + student_assignment + srl_instructions
-print(template)
+#template = role_description + analysis_instructions
+template = role_description + rules
 
 # Update the agent's system instructions
 engagebot.agent.llm_chain.prompt.messages[0] = SystemMessagePromptTemplate(
@@ -158,13 +178,7 @@ if "openai_model" not in st.session_state:
   
 # Initialize chat history
 if "messages" not in st.session_state:
-  st.session_state.messages = [{"role": "assistant", "content": """Hello! My name is Sigma and I am here to help you reflect on what you learned last week."""},{"role":"assistant","content":"""Your assignments is to carefully read the two articles provided to you: "Models of Self-regulated Learning: A review" and "Self-Regulated Learning: Beliefs, Techniques, and Illusions.\n"
-Based on your understanding, prepare the following answers in 500 words or less:\n
-a) Definition of SRL: In your own words, provide a definition of self-regulated learning.\n
-b) Model Description: Describe one of the SRL models that you found most interesting. Explain why it resonated with you.\n
-c) Learning Activity Proposal: Suggest an example learning activity or experience that could be integrated into an academic course. This activity should scaffold self-regulated learning for students.\n\n
-Go ahead and submit when you're ready!
-"""}]
+  st.session_state.messages = [{"role": "assistant", "content": """Hello! My name is Sigma and I am here to help you reflect on what you learned last week."""}]
   
 # Display chat messages from history on app rerun
 for message in st.session_state.messages:
@@ -182,6 +196,7 @@ if prompt := st.chat_input("What is up?"):
   with st.chat_message("assistant"):
     message_placeholder = st.empty()
     response = engagebot.run(prompt)
+    print(response)
     message_placeholder.markdown(response)
   st.session_state.messages.append({"role": "assistant", "content": response})
 
