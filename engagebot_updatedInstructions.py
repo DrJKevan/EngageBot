@@ -208,6 +208,8 @@ if prompt := st.chat_input("What is up?"):
 # Fix 'Could not parse LLM Output' error that is curently being handled automatically on via parameter in agent initialization. This appears to slightly impact performance, but not quality of inference. Some potential conversation to help find the solution:
 # https://github.com/langchain-ai/langchain/pull/1707
 # https://github.com/langchain-ai/langchain/issues/1358
+# Nice video on the difference between map-reduce, stuff, refine, and map-rank document searches with an example:
+# https://www.youtube.com/watch?v=OTL4CvDFlro
 
 # Notes for improving inference
 # The more text in the context, the more likely the LLM will forget the instructions
