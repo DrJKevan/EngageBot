@@ -98,7 +98,8 @@ engagebot = initialize_agent(
     verbose=True,
     memory=conversational_memory,
     handle_parsing_errors = True,
-    agent_kwargs={"format_instructions": FORMAT_INSTRUCTIONS}
+    agent_kwargs={"format_instructions": FORMAT_INSTRUCTIONS},
+    max_execution_time=10, #limits length of agent running, in seconds.
 )
 
 # Create template for system message to provide direction for the agent
@@ -115,7 +116,7 @@ rules = """Rules:\n
 - Keep the conversation on task to complete the assignment\n
 """
 
-#template = role_description + analysis_instructions
+#template = role_description + analysis_instructions  # Getting an error when it attempts to do 'analysis'. I think it's creating its own header in the llm response which is causing a parsing error.
 template = role_description + rules
 
 # Update the agent's system instructions
