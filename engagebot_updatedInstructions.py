@@ -29,8 +29,11 @@ os.environ['OPENAI_API_KEY'] = st.secrets['OPENAI_API_KEY']
 # Use next line when pull from local .env file
 api_key = os.getenv("OPENAI_API_KEY")
 
+# Define available OpenAI models
+models = ["gpt-3.5-turbo", "gpt-3.5-turbo-0301", "gpt-3.5-turbo-0613", "gpt-3.5-turbo-16k", "gpt-3.5-turbo-16k-0613"]
+
 # Initialize the OpenAI Class
-llm = ChatOpenAI(openai_api_key=api_key, temperature=0.2)
+llm = ChatOpenAI(openai_api_key=api_key, temperature=0.2, model=models[4])
 
 # Initialize chatbot memory
 from langchain.memory import ConversationBufferMemory
