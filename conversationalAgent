@@ -130,3 +130,16 @@ llm_chain = agent.llm_chain
 
 # Replace the system message in messages[0] with the formatted message
 llm_chain.prompt.messages[0] = {"role": "system", "content": formatted_message}
+
+# Old agent construction
+# Initialize Agent
+engagebot = initialize_agent(
+    agent='chat-conversational-react-description',
+    tools=tools,
+    llm=llm,
+    verbose=True,
+    memory=conversational_memory,
+    handle_parsing_errors = True,
+    agent_kwargs={"format_instructions": FORMAT_INSTRUCTIONS},
+    max_execution_time=10, #limits length of agent running, in seconds.
+)

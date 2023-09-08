@@ -5,7 +5,7 @@ from langchain.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.vectorstores import Pinecone
-from langchain.chains import RetrievalQA, LLMChain
+from langchain.chains import RetrievalQA, LLMChain, ConversationChain
 from langchain.chat_models import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
 from langchain.prompts.chat import SystemMessagePromptTemplate
@@ -18,20 +18,13 @@ from langchain.schema import (
     HumanMessage
 )
 
-
 # Hack to get multi-input tools working again.
 # See: https://github.com/langchain-ai/langchain/issues/3700#issuecomment-1568735481
 from langchain.agents.conversational_chat.base import ConversationalChatAgent
 ConversationalChatAgent._validate_tools = lambda *_, **__: ...
 
-# Specify the path to the .env file
-#dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
-
-# Load the .env file
-#load_dotenv(dotenv_path)
-
 # Set the OpenAI API Key
-# Use this line when working with Streamlit
+# cli command = streamlit run engagebot.py
 os.environ['OPENAI_API_KEY'] = st.secrets['OPENAI_API_KEY']
 
 # Use next line when pull from local .env file
@@ -41,21 +34,15 @@ api_key = os.getenv("OPENAI_API_KEY")
 models = ["gpt-3.5-turbo", "gpt-3.5-turbo-0301", "gpt-3.5-turbo-0613", "gpt-3.5-turbo-16k", "gpt-3.5-turbo-16k-0613", "gpt-4", "gpt-4-0314", "gpt-4-0613"]
 
 # Initialize the OpenAI Class
-llm = ChatOpenAI(openai_api_key=api_key, temperature=0.2, model=models[2])
+llm = ChatOpenAI(openai_api_key=api_key, temperature=0, model=models[2])
 
 # Initialize chatbot memory
-
 conversational_memory = ConversationBufferMemory(
     memory_key = "chat_history",
     input_key="input",
     return_messages = True,
+    ai_prefix="AI Assistant",
 )
-
-# Define the input variables
-input_variables = {
-    "student_name": "Alice",
-    "topic_name": "Self-regulated learning"
-}
 
 # Prepare tools for bot
 # "Exemplar" - Ideal summary of last week's content provided by instructor. The bot should use this as a comparator for the student's reflection.
@@ -82,90 +69,16 @@ class Assignment (BaseTool):
         """
 
 # "Learning Materials" - DB of vectorized learning materials from the prior week. The bot should reference these materials when providing feedback on the student reflection, referencing what content was covered in the learning materials, or what materials to review again to improve understanding.
-## PREPARE DATASTORES
-# Initialize Pinecone
-# Dimensions = 1536
-# Metric - Cosine
-pinecone.init(
-    api_key  = "7efbb05b-6bb7-4e89-bd90-116a7c06f679", # find at app.pinecone.io
-    environment = "us-west4-gcp-free" # next to api key in console 
-)
-
-# Load course data
-loader = PyPDFLoader("srlpaper.pdf")
-pages = loader.load_and_split()
-
-# TODO Review best practices on splitting parameters, explore text splitting options (specifically MarkdownHeaderTextSplitter)
-text_splitter = RecursiveCharacterTextSplitter(
-    chunk_size = 1000,
-    chunk_overlap = 200,
-    length_function = len,
-)
-
-docs = text_splitter.split_documents(pages)
-
-# Create embeddings
-embeddings = OpenAIEmbeddings()
-
-# Create a vectorstore 
-index_name = "engagebot2"
-
-# Create a new index and search
-# docsearch = Pinecone.from_documents(docs, embeddings, index_name=index_name)
-
-# Search from a new index
-docsearch = Pinecone.from_existing_index(index_name,embeddings)
-
-# Vectorstore using transient memory via Chroma
-# from langchain.vectorstores import Chroma
-# docsearch = Chroma.from_documents(docs, embeddings)
-
-
 
 # Define tools
 tools = [Exemplar(), Assignment()]
 
-# Trying different agent constructor
-newAgentPrompt = ConversationalChatAgent.create_prompt(tools=tools)
-llm_chain = LLMChain(llm=llm, prompt=newAgentPrompt)
-agent = ConversationalChatAgent(llm_chain=llm_chain)
-executor = AgentExecutor.from_agent_and_tools(
-   agent = agent,
-   tools = tools,
-   memory = conversational_memory,
-)
-while True:
-    print('new agent resonse\n')
-    print(executor.run('This is a test... is anyone there?'))
-    print('end of new agent response\n')
+# Define the input variables
+input_variables = {
+    "student_name": "Alice",
+    "topic_name": "Self-regulated learning"
+}
 
-FORMAT_INSTRUCTIONS = """To use a tool, please use the following format:
-
-\```
-Thought: Do I need to use a tool? Yes
-Action: the action to take, should be one of [{tool_names}]
-Action Input: the input to the action
-Observation: the result of the action
-\```
-
-When you have a response to say to the Human, or if you do not need to use a tool, you MUST use the following format(the prefix of "Thought: " and "{ai_prefix}: " are must be included):
-
-\```
-Thought: Do I need to use a tool? No
-{ai_prefix}: [your response here]
-\```"""
-
-# Initialize Agent
-engagebot = initialize_agent(
-    agent='chat-conversational-react-description',
-    tools=tools,
-    llm=llm,
-    verbose=True,
-    memory=conversational_memory,
-    handle_parsing_errors = True,
-    agent_kwargs={"format_instructions": FORMAT_INSTRUCTIONS},
-    max_execution_time=10, #limits length of agent running, in seconds.
-)
 
 # Create template for system message to provide direction for the agent
 role_description = """Your name is Sigma and you are a mentor for higher education students. Your goal to provide feedback to students on their assignments. Using the tools available to you, provide feedback to the user's assignment submission considering the assignment instructions and the exemplar available to you.\n\n"""
@@ -181,21 +94,28 @@ rules = """Rules:\n
 - Keep the conversation on task to complete the assignment\n
 """
 
-#template = role_description + analysis_instructions  # Getting an error when it attempts to do 'analysis'. I think it's creating its own header in the llm response which is causing a parsing error.
-template = role_description + rules
+history = """
+\nCurrent conversation:\n
+{chat_history}\n
+Human: {input}\n
+AI Assistant: """
 
-# Update the agent's system instructions
-engagebot.agent.llm_chain.prompt.messages[0] = SystemMessagePromptTemplate(
-                prompt=PromptTemplate(
-                    input_variables=[],
-                    output_parser=None,
-                    partial_variables={},
-                    template= template,
-                    template_format='f-string',
-                    validate_template=True
-                ),
-                additional_kwargs={}
-            )
+system_message = role_description + rules + history
+
+# Trying different agent constructor
+newAgentPrompt = ConversationalChatAgent.create_prompt(tools=tools, system_message=system_message, input_variables=["chat_history", "input", "agent_scratchpad"])
+llm_chain = LLMChain(llm=llm, prompt=newAgentPrompt)
+agent = ConversationalChatAgent(llm_chain=llm_chain, tools=tools, verbose=True)
+executor = AgentExecutor.from_agent_and_tools(
+   agent = agent,
+   tools = tools,
+   memory = conversational_memory,
+   early_stopping_method = "force",
+   handle_parsing_errors = True,
+   max_iterations = 4,
+   #return_intermediate_steps = True,
+   verbose = True,
+)
 
 # Streamlit Code
 st.set_page_config(page_title="Sigma - Learning Mentor", page_icon=":robot:")
@@ -261,9 +181,11 @@ if prompt := st.chat_input("What is up?"):
   # Display assistant response in chat message container
   with st.chat_message("assistant"):
     message_placeholder = st.empty()
-    response = engagebot.run(prompt)
+    response = executor.run(prompt)
     message_placeholder.markdown(response)
   st.session_state.messages.append({"role": "assistant", "content": response})
+
+
 
 # TODO 
 # Serialization for better user experience: https://python.langchain.com/docs/modules/model_io/models/llms/streaming_llm
