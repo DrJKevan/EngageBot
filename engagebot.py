@@ -136,6 +136,18 @@ st.markdown(
             background-color: {background_color};
             color: {font_color};
         }}
+    @keyframes typing {{
+        0% {{ content: '.'; }}
+        25% {{ content: '..'; }}
+        50% {{ content: '...'; }}
+        75% {{ content: '..'; }}
+        100% {{ content: '.'; }}
+    }}
+
+    .typing-animation::before {{
+        content: '...';
+        animation: typing 1s steps(5, end) infinite;
+    }}
     </style>
     """,
     unsafe_allow_html=True,
@@ -183,13 +195,20 @@ if prompt := st.chat_input("What is up?"):
   # Display user message in chat message container
   with st.chat_message("user"):
     st.markdown(prompt)
-  # Display assistant response in chat message container
+
+  # Display assistant thinking animation in chat message container
   with st.chat_message("assistant"):
+    # This placeholder will initially show the "thinking" animation
     message_placeholder = st.empty()
+    message_placeholder.markdown('<div class="typing-animation"></div>', unsafe_allow_html=True) # Simple 3 dots "thinking" animation
+    
+    # Get the response from the chatbot
     response = executor.run(prompt)
     #print(conversational_memory.buffer_as_messages) - Uncomment to see message log
+
+    # Replace the "thinking" animation with the chatbot's response
     message_placeholder.markdown(response)
-  st.session_state.messages.append({"role": "assistant", "content": response})
+    st.session_state.messages.append({"role": "assistant", "content": response})
 
 
 
