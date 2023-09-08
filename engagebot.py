@@ -5,17 +5,19 @@ from langchain.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.vectorstores import Pinecone
-from langchain.chains import RetrievalQA
+from langchain.chains import RetrievalQA, LLMChain
 from langchain.chat_models import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
 from langchain.prompts.chat import SystemMessagePromptTemplate
 from langchain import PromptTemplate
 from dotenv import load_dotenv
-from langchain.agents import initialize_agent
+from langchain.memory import ConversationBufferMemory
+from langchain.agents import initialize_agent, load_tools, AgentExecutor
 from langchain.schema import (
     SystemMessage,
     HumanMessage
 )
+
 
 # Hack to get multi-input tools working again.
 # See: https://github.com/langchain-ai/langchain/issues/3700#issuecomment-1568735481
@@ -36,15 +38,16 @@ os.environ['OPENAI_API_KEY'] = st.secrets['OPENAI_API_KEY']
 api_key = os.getenv("OPENAI_API_KEY")
 
 # Define available OpenAI models
-models = ["gpt-3.5-turbo", "gpt-3.5-turbo-0301", "gpt-3.5-turbo-0613", "gpt-3.5-turbo-16k", "gpt-3.5-turbo-16k-0613"]
+models = ["gpt-3.5-turbo", "gpt-3.5-turbo-0301", "gpt-3.5-turbo-0613", "gpt-3.5-turbo-16k", "gpt-3.5-turbo-16k-0613", "gpt-4", "gpt-4-0314", "gpt-4-0613"]
 
 # Initialize the OpenAI Class
-llm = ChatOpenAI(openai_api_key=api_key, temperature=0.2, model=models[4])
+llm = ChatOpenAI(openai_api_key=api_key, temperature=0.2, model=models[2])
 
 # Initialize chatbot memory
-from langchain.memory import ConversationBufferMemory
+
 conversational_memory = ConversationBufferMemory(
     memory_key = "chat_history",
+    input_key="input",
     return_messages = True,
 )
 
@@ -121,6 +124,20 @@ docsearch = Pinecone.from_existing_index(index_name,embeddings)
 
 # Define tools
 tools = [Exemplar(), Assignment()]
+
+# Trying different agent constructor
+newAgentPrompt = ConversationalChatAgent.create_prompt(tools=tools)
+llm_chain = LLMChain(llm=llm, prompt=newAgentPrompt)
+agent = ConversationalChatAgent(llm_chain=llm_chain)
+executor = AgentExecutor.from_agent_and_tools(
+   agent = agent,
+   tools = tools,
+   memory = conversational_memory,
+)
+while True:
+    print('new agent resonse\n')
+    print(executor.run('This is a test... is anyone there?'))
+    print('end of new agent response\n')
 
 FORMAT_INSTRUCTIONS = """To use a tool, please use the following format:
 
