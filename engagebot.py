@@ -197,5 +197,8 @@ if prompt := st.chat_input("What is up?"):
 # Nice video on the difference between map-reduce, stuff, refine, and map-rank document searches with an example:
 # https://www.youtube.com/watch?v=OTL4CvDFlro
 
+# Message history gone due to Streamlit?
+# https://github.com/langchain-ai/langchain/issues/2303
+
 # Notes for improving inference
 # The more text in the context, the more likely the LLM will forget the instructions
