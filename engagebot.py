@@ -12,6 +12,7 @@ from langchain.prompts.chat import SystemMessagePromptTemplate
 from langchain import PromptTemplate
 from dotenv import load_dotenv
 from langchain.memory import ConversationBufferMemory
+from langchain.memory.chat_message_histories import StreamlitChatMessageHistory
 from langchain.agents import initialize_agent, load_tools, AgentExecutor
 from langchain.schema import (
     SystemMessage,
@@ -36,9 +37,13 @@ models = ["gpt-3.5-turbo", "gpt-3.5-turbo-0301", "gpt-3.5-turbo-0613", "gpt-3.5-
 # Initialize the OpenAI Class
 llm = ChatOpenAI(openai_api_key=api_key, temperature=0, model=models[2])
 
+# Optionally, specify your own session_state key for storing messages
+msgs = StreamlitChatMessageHistory(key="special_app_key")
+
 # Initialize chatbot memory
 conversational_memory = ConversationBufferMemory(
     memory_key = "chat_history",
+    chat_memory = msgs,
     input_key="input",
     return_messages = True,
     ai_prefix="AI Assistant",
@@ -182,6 +187,7 @@ if prompt := st.chat_input("What is up?"):
   with st.chat_message("assistant"):
     message_placeholder = st.empty()
     response = executor.run(prompt)
+    #print(conversational_memory.buffer_as_messages) - Uncomment to see message log
     message_placeholder.markdown(response)
   st.session_state.messages.append({"role": "assistant", "content": response})
 
@@ -196,9 +202,6 @@ if prompt := st.chat_input("What is up?"):
 # https://github.com/langchain-ai/langchain/issues/1358
 # Nice video on the difference between map-reduce, stuff, refine, and map-rank document searches with an example:
 # https://www.youtube.com/watch?v=OTL4CvDFlro
-
-# Message history gone due to Streamlit?
-# https://github.com/langchain-ai/langchain/issues/2303
 
 # Notes for improving inference
 # The more text in the context, the more likely the LLM will forget the instructions
