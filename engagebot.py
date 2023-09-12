@@ -105,13 +105,14 @@ else:
 search_readings_chain = RetrievalQA.from_chain_type(llm, chain_type="stuff", retriever=vectorstore.as_retriever())
 search_readings_tool = Tool(
    name="Class Assignment Readings",
-   func=search_readings_chain.run,
+   #func=search_readings_chain.run
+   func = vectorstore.similarity_search,
    description="useful for when you need to reference class readings from previous weeks that students have already read"
 )
 
 # Define tools
-tools = [Exemplar(), Assignment()]
-# tools = [Exemplar(), Assignment(), search_readings_tool]
+#tools = [Exemplar(), Assignment()]
+tools = [Exemplar(), Assignment(), search_readings_tool]
 
 # Define the input variables
 input_variables = {
