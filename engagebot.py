@@ -19,6 +19,7 @@ from langchain.schema import (
     HumanMessage
 )
 from langchain.callbacks import get_openai_callback
+from langchain.tools import BaseTool, Tool
 
 # Hack to get multi-input tools working again.
 # See: https://github.com/langchain-ai/langchain/issues/3700#issuecomment-1568735481
@@ -52,7 +53,6 @@ conversational_memory = ConversationBufferMemory(
 
 # Prepare tools for bot
 # "Exemplar" - Ideal summary of last week's content provided by instructor. The bot should use this as a comparator for the student's reflection.
-from langchain.tools import BaseTool
 
 class Exemplar (BaseTool):
     name="Exemplar"
@@ -73,11 +73,45 @@ class Assignment (BaseTool):
         c) Learning Activity Proposal: Suggest an example learning activity or experience that could be integrated into an academic course. This activity should scaffold self-regulated learning for students.\n\n
         Go ahead and submit when you're ready!
         """
-
+    
 # "Learning Materials" - DB of vectorized learning materials from the prior week. The bot should reference these materials when providing feedback on the student reflection, referencing what content was covered in the learning materials, or what materials to review again to improve understanding.
+embeddings = OpenAIEmbeddings()
+# Connect to our Pinecone vector database of PDF readings.
+pinecone.init(
+    api_key  = st.secrets['PINECONE_API_KEY'], # find at app.pinecone.io
+    environment = st.secrets['PINECONE_ENVIRONMENT']
+)
+index_name = st.secrets['PINECONE_INDEX']
+if index_name not in pinecone.list_indexes():
+    # Create the Pinecone index from the source PDFs if it doesn't exist.
+    pinecone.create_index(name=index_name, dimension=1536, metric="cosine")
+index = pinecone.Index(index_name)
+# print(index.describe_index_stats())
+if index.describe_index_stats().total_vector_count < 1:
+    # Load course data with PDFPlumber: $ python3 -m pip install pdfplumber
+    from langchain.document_loaders import PDFPlumberLoader
+    loader = PDFPlumberLoader("srlpaper.pdf")
+    pages = loader.load()
+    text_splitter = RecursiveCharacterTextSplitter(
+        chunk_size = 1000,
+        chunk_overlap = 200,
+        length_function = len,
+    )
+    docs = text_splitter.split_documents(pages)
+    vectorstore = Pinecone.from_documents(docs, embeddings, index_name=st.secrets['PINECONE_INDEX'])
+else:
+    vectorstore = Pinecone(index, embeddings, 'text')
+# See: https://www.pinecone.io/learn/series/langchain/langchain-retrieval-augmentation/
+search_readings_chain = RetrievalQA.from_chain_type(llm, chain_type="stuff", retriever=vectorstore.as_retriever())
+search_readings_tool = Tool(
+   name="Class Assignment Readings",
+   func=search_readings_chain.run,
+   description="useful for when you need to reference class readings from previous weeks that students have already read"
+)
 
 # Define tools
 tools = [Exemplar(), Assignment()]
+# tools = [Exemplar(), Assignment(), search_readings_tool]
 
 # Define the input variables
 input_variables = {

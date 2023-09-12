@@ -2,6 +2,7 @@ langchain
 openai
 streamlit
 pypdf
+pdfplumber
 pinecone-client
 tiktoken
 python-dotenv
