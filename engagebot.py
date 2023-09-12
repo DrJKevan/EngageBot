@@ -107,7 +107,7 @@ search_readings_tool = Tool(
    name="Class Assignment Readings",
    #func=search_readings_chain.run
    func = vectorstore.similarity_search,
-   description="useful for when you need to reference class readings from previous weeks that students have already read"
+   description="useful for when you need to search class readings for a specific topic"
 )
 
 # Define tools
