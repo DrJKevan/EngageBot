@@ -18,6 +18,7 @@ from langchain.schema import (
     SystemMessage,
     HumanMessage
 )
+from langchain.callbacks import get_openai_callback
 
 # Hack to get multi-input tools working again.
 # See: https://github.com/langchain-ai/langchain/issues/3700#issuecomment-1568735481
@@ -122,6 +123,14 @@ executor = AgentExecutor.from_agent_and_tools(
    verbose = True,
 )
 
+# Add a callback to count the number of tokens used for each response.
+# This callback is not necessary for the agent to function, but it is useful for tracking token usage.
+def run_query_and_count_tokens(chain, query):
+    with get_openai_callback() as cb:
+        result = chain.run(query)
+        print(cb)
+    return result
+
 # Streamlit Code
 st.set_page_config(page_title="Sigma - Learning Mentor", page_icon=":robot:")
 
@@ -203,8 +212,9 @@ if prompt := st.chat_input("What is up?"):
     message_placeholder.markdown('<div class="typing-animation"></div>', unsafe_allow_html=True) # Simple 3 dots "thinking" animation
     
     # Get the response from the chatbot
-    response = executor.run(prompt)
+    #response = executor.run(prompt)
     #print(conversational_memory.buffer_as_messages) - Uncomment to see message log
+    response = run_query_and_count_tokens(executor, prompt)
 
     # Replace the "thinking" animation with the chatbot's response
     message_placeholder.markdown(response)
