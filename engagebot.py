@@ -102,16 +102,14 @@ if index.describe_index_stats().total_vector_count < 1:
 else:
     vectorstore = Pinecone(index, embeddings, 'text')
 # See: https://www.pinecone.io/learn/series/langchain/langchain-retrieval-augmentation/
-search_readings_chain = RetrievalQA.from_chain_type(llm, chain_type="stuff", retriever=vectorstore.as_retriever())
+search_readings_chain = RetrievalQA.from_chain_type(llm=llm, chain_type="stuff", retriever=vectorstore.as_retriever())
 search_readings_tool = Tool(
    name="Class Assignment Readings",
-   #func=search_readings_chain.run
-   func = vectorstore.similarity_search,
+   func=search_readings_chain.run,
    description="useful for when you need to reference class readings from previous weeks that students have already read"
 )
 
 # Define tools
-#tools = [Exemplar(), Assignment()]
 tools = [Exemplar(), Assignment(), search_readings_tool]
 
 # Define the input variables
@@ -269,3 +267,5 @@ if prompt := st.chat_input("What is up?"):
 
 # Notes for improving inference
 # The more text in the context, the more likely the LLM will forget the instructions
+# Improve RAG to manage token usage and proper tokenization of the document
+# Many documents discuss an {agent_scratchpad} being used in templates. Do we need that? What can we do with it?
