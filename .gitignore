@@ -2,3 +2,4 @@ venv/
 .env
 env
 .streamlit/secrets.toml
+.db/chat_history.db
