@@ -1,26 +1,18 @@
 import os
 import streamlit as st
 import pinecone
-from langchain.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.vectorstores import Pinecone
-from langchain.chains import RetrievalQA, LLMChain, ConversationChain
+from langchain.chains import RetrievalQA, LLMChain
 from langchain.chat_models import ChatOpenAI
-from langchain.prompts import ChatPromptTemplate
-from langchain.prompts.chat import SystemMessagePromptTemplate
-from langchain import PromptTemplate
-from dotenv import load_dotenv
 from langchain.memory import ConversationBufferMemory
 from langchain.memory.chat_message_histories import StreamlitChatMessageHistory
-from langchain.agents import initialize_agent, load_tools, AgentExecutor
-from langchain.schema import (
-    SystemMessage,
-    HumanMessage
-)
+from langchain.memory.chat_message_histories.sql import SQLChatMessageHistory
+from langchain.agents import AgentExecutor
 from langchain.callbacks import get_openai_callback
 from langchain.tools import BaseTool, Tool
-from langchain.memory.chat_message_histories.sql import SQLChatMessageHistory
+
 
 # Initialize SQLite storage of chat history
 sqlite_url_template = "sqlite:///{location}{db}"
