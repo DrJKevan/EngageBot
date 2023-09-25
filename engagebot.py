@@ -9,22 +9,40 @@ from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
 from langchain.memory.chat_message_histories import StreamlitChatMessageHistory
 from langchain.memory.chat_message_histories.sql import SQLChatMessageHistory
+from langchain.memory import PostgresChatMessageHistory
 from langchain.agents import AgentExecutor
 from langchain.callbacks import get_openai_callback
 from langchain.tools import BaseTool, Tool
 
 
 # Initialize SQLite storage of chat history
-sqlite_url_template = "sqlite:///{location}{db}"
+# sqlite_url_template = "sqlite:///{location}{db}"
 
-connection_string = sqlite_url_template.format(
-    location=st.secrets['SQL_LOCATION'],
-    db=st.secrets['SQL_DB']
-)
+# connection_string = sqlite_url_template.format(
+#     location=st.secrets['SQL_LOCATION'],
+#     db=st.secrets['SQL_DB']
+# )
 
-db_history = SQLChatMessageHistory(
-    connection_string=connection_string,
-    session_id='test_session',
+# db_history = SQLChatMessageHistory(
+#     connection_string=connection_string,
+#     session_id='test_session',
+# )
+
+# Initialize postgresql storage of chat history. Prerequisites: make sure a
+# postgres server is running and has a user with the CREATEDB attribute.
+#   $ psql postgres
+#   =# CREATE ROLE {pg_user} WITH LOGIN PASSWORD {pg_pass};
+#   =# CREATE DATABASE {pg_db};
+#   =# GRANT ALL PRIVILEGES ON DATABASE {pg_db} TO {pg_user};
+#   =# quit;
+db_history = PostgresChatMessageHistory(
+   connection_string="postgresql://{pg_user}:{pg_pass}@{pg_host}/{pg_db}".format(
+        pg_user=st.secrets['PG_USER'],
+        pg_pass=st.secrets['PG_PASS'],
+        pg_host=st.secrets['PG_HOST'],
+        pg_db=st.secrets['PG_DB']
+    ),
+    session_id="engagebot"
 )
 
 # Hack to get multi-input tools working again.
