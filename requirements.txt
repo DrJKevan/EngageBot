@@ -6,3 +6,4 @@ pdfplumber
 pinecone-client
 tiktoken
 python-dotenv
+psycopg
