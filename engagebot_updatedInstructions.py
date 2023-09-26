@@ -1,39 +1,19 @@
 import os
 import streamlit as st
 import pinecone
-from langchain.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.vectorstores import Pinecone
-from langchain.chains import RetrievalQA, LLMChain, ConversationChain
+from langchain.chains import RetrievalQA, LLMChain
 from langchain.chat_models import ChatOpenAI
-from langchain.prompts import ChatPromptTemplate
-from langchain.prompts.chat import SystemMessagePromptTemplate
-from langchain import PromptTemplate
-from dotenv import load_dotenv
 from langchain.memory import ConversationBufferMemory
 from langchain.memory.chat_message_histories import StreamlitChatMessageHistory
-from langchain.agents import initialize_agent, load_tools, AgentExecutor
-from langchain.schema import (
-    SystemMessage,
-    HumanMessage
-)
+from langchain.memory.chat_message_histories.sql import SQLChatMessageHistory
+from langchain.memory import PostgresChatMessageHistory
+from langchain.agents import AgentExecutor
 from langchain.callbacks import get_openai_callback
 from langchain.tools import BaseTool, Tool
-from langchain.memory.chat_message_histories.sql import SQLChatMessageHistory
 
-# Initialize SQLite storage of chat history
-sqlite_url_template = "sqlite:///{location}{db}"
-
-connection_string = sqlite_url_template.format(
-    location=st.secrets['SQL_LOCATION'],
-    db=st.secrets['SQL_DB']
-)
-
-db_history = SQLChatMessageHistory(
-    connection_string=connection_string,
-    session_id='test_session',
-)
 
 # Hack to get multi-input tools working again.
 # See: https://github.com/langchain-ai/langchain/issues/3700#issuecomment-1568735481
@@ -241,7 +221,7 @@ if "openai_model" not in st.session_state:
 if "messages" not in st.session_state:
   welcome_message = """Hello! My name is Sigma and I am here to help you reflect on what you learned last week."""
   st.session_state.messages = [{"role": "assistant", "content": welcome_message}]
-  db_history.add_ai_message(welcome_message)
+  #db_history.add_ai_message(welcome_message)
   
 # Display chat messages from history on app rerun
 for message in st.session_state.messages:
@@ -252,7 +232,7 @@ for message in st.session_state.messages:
 if prompt := st.chat_input("What is up?"):
   # Add user message to chat history
   st.session_state.messages.append({"role":"user", "content":prompt})
-  db_history.add_user_message(prompt)
+  #db_history.add_user_message(prompt)
   # Display user message in chat message container
   with st.chat_message("user"):
     st.markdown(prompt)
@@ -271,7 +251,7 @@ if prompt := st.chat_input("What is up?"):
     # Replace the "thinking" animation with the chatbot's response
     message_placeholder.markdown(response)
     st.session_state.messages.append({"role": "assistant", "content": response})
-    db_history.add_ai_message(response)
+    #db_history.add_ai_message(response)
 
 
 
