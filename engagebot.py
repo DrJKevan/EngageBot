@@ -1,6 +1,8 @@
 import os
 import streamlit as st
 import pinecone
+import psycopg2
+
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.vectorstores import Pinecone
@@ -14,6 +16,7 @@ from langchain.agents import AgentExecutor
 from langchain.callbacks import get_openai_callback
 from langchain.tools import BaseTool, Tool
 
+from langchain.vectorstores.pgvector import PGVector
 
 # Initialize SQLite storage of chat history
 # sqlite_url_template = "sqlite:///{location}{db}"
@@ -31,9 +34,14 @@ from langchain.tools import BaseTool, Tool
 # Initialize postgresql storage of chat history. Prerequisites: make sure a
 # postgres server is running and has a user with the CREATEDB attribute.
 #   $ psql postgres
-#   =# CREATE ROLE {pg_user} WITH LOGIN PASSWORD {pg_pass};
+#   =# CREATE ROLE {pg_user} WITH LOGIN PASSWORD '{pg_pass}';
 #   =# CREATE DATABASE {pg_db};
 #   =# GRANT ALL PRIVILEGES ON DATABASE {pg_db} TO {pg_user};
+#   =# quit;
+# Also ensure the pgvector library is installed and the extension created in 
+# your database:
+#   $ psql {your_vector_db}
+#   =# CREATE EXTENSION IF NOT EXISTS vector;
 #   =# quit;
 db_history = PostgresChatMessageHistory(
    connection_string="postgresql://{pg_user}:{pg_pass}@{pg_host}/{pg_db}".format(
@@ -100,18 +108,32 @@ class Assignment (BaseTool):
     
 # "Learning Materials" - DB of vectorized learning materials from the prior week. The bot should reference these materials when providing feedback on the student reflection, referencing what content was covered in the learning materials, or what materials to review again to improve understanding.
 embeddings = OpenAIEmbeddings()
-# Connect to our Pinecone vector database of PDF readings.
-pinecone.init(
-    api_key  = st.secrets['PINECONE_API_KEY'], # find at app.pinecone.io
-    environment = st.secrets['PINECONE_ENVIRONMENT']
+
+# Connect to our postgres database vector store via pgvector.
+vectorstore = PGVector(
+   embedding_function=embeddings,
+   collection_name=st.secrets['PGVECTOR_COLLECTION_NAME'],
+   connection_string=PGVector.connection_string_from_db_params(
+      driver="psycopg2",
+      host=st.secrets['PG_HOST'],
+      port=st.secrets['PG_PORT'],
+      database=st.secrets['PG_DB'],
+      user=st.secrets['PG_USER'],
+      password=st.secrets['PG_PASS'],
+   )
 )
-index_name = st.secrets['PINECONE_INDEX']
-if index_name not in pinecone.list_indexes():
-    # Create the Pinecone index from the source PDFs if it doesn't exist.
-    pinecone.create_index(name=index_name, dimension=1536, metric="cosine")
-index = pinecone.Index(index_name)
-# print(index.describe_index_stats())
-if index.describe_index_stats().total_vector_count < 1:
+# Create vectors if they don't exist.
+connection_string="postgresql://{pg_user}:{pg_pass}@{pg_host}/{pg_db}".format(
+	pg_user=st.secrets['PG_USER'],
+	pg_pass=st.secrets['PG_PASS'],
+	pg_host=st.secrets['PG_HOST'],
+	pg_db=st.secrets['PG_DB'],
+)
+conn = psycopg2.connect(connection_string)
+cur = conn.cursor()
+cur.execute("SELECT EXISTS ( SELECT FROM pg_tables WHERE tablename = 'langchain_pg_embedding' )")
+table_exists = cur.fetchone()[0]
+if not table_exists:
     # Load course data with PDFPlumber: $ python3 -m pip install pdfplumber
     from langchain.document_loaders import PDFPlumberLoader
     loader = PDFPlumberLoader("srlpaper.pdf")
@@ -122,9 +144,34 @@ if index.describe_index_stats().total_vector_count < 1:
         length_function = len,
     )
     docs = text_splitter.split_documents(pages)
-    vectorstore = Pinecone.from_documents(docs, embeddings, index_name=st.secrets['PINECONE_INDEX'])
-else:
-    vectorstore = Pinecone(index, embeddings, 'text')
+    vectorstore.add_documents(docs)
+
+# # Connect to our Pinecone vector database of PDF readings.
+# pinecone.init(
+#     api_key  = st.secrets['PINECONE_API_KEY'], # find at app.pinecone.io
+#     environment = st.secrets['PINECONE_ENVIRONMENT']
+# )
+# index_name = st.secrets['PINECONE_INDEX']
+# if index_name not in pinecone.list_indexes():
+#     # Create the Pinecone index from the source PDFs if it doesn't exist.
+#     pinecone.create_index(name=index_name, dimension=1536, metric="cosine")
+# index = pinecone.Index(index_name)
+# # print(index.describe_index_stats())
+# if index.describe_index_stats().total_vector_count < 1:
+#     # Load course data with PDFPlumber: $ python3 -m pip install pdfplumber
+#     from langchain.document_loaders import PDFPlumberLoader
+#     loader = PDFPlumberLoader("srlpaper.pdf")
+#     pages = loader.load()
+#     text_splitter = RecursiveCharacterTextSplitter(
+#         chunk_size = 1000,
+#         chunk_overlap = 200,
+#         length_function = len,
+#     )
+#     docs = text_splitter.split_documents(pages)
+#     vectorstore = Pinecone.from_documents(docs, embeddings, index_name=st.secrets['PINECONE_INDEX'])
+# else:
+#     vectorstore = Pinecone(index, embeddings, 'text')
+    
 # See: https://www.pinecone.io/learn/series/langchain/langchain-retrieval-augmentation/
 search_readings_chain = RetrievalQA.from_chain_type(llm=llm, chain_type="stuff", retriever=vectorstore.as_retriever())
 search_readings_tool = Tool(

@@ -1,9 +1,10 @@
 langchain
 openai
 streamlit
-pypdf
 pdfplumber
 pinecone-client
 tiktoken
 python-dotenv
 psycopg
+psycopg2-binary
+pgvector
