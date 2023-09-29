@@ -18,6 +18,18 @@ from langchain.tools import BaseTool, Tool
 
 from langchain.vectorstores.pgvector import PGVector
 
+from streamlit.runtime.scriptrunner import get_script_run_ctx
+
+# Get session info so we can uniquely identify sessions in chat history table.
+def get_session_id() -> str:
+    try:
+        ctx = get_script_run_ctx()
+        if ctx is None:
+            return None
+    except Exception as e:
+        return None
+    return ctx.session_id
+
 # Initialize SQLite storage of chat history
 # sqlite_url_template = "sqlite:///{location}{db}"
 
@@ -50,7 +62,7 @@ db_history = PostgresChatMessageHistory(
         pg_host=st.secrets['PG_HOST'],
         pg_db=st.secrets['PG_DB']
     ),
-    session_id="engagebot"
+    session_id=get_session_id() # Unique UUID for each session.
 )
 
 # Hack to get multi-input tools working again.
