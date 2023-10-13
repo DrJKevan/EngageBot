@@ -90,16 +90,8 @@ class Assignment (BaseTool):
         Go ahead and submit when you're ready!
         """
     
-# "Learning Materials" - DB of vectorized learning materials from the prior week. The bot should reference these materials when providing feedback on the student reflection, referencing what content was covered in the learning materials, or what materials to review again to improve understanding.
-embeddings = OpenAIEmbeddings()
-
-# Create vectors if they don't exist.
-conn = psycopg2.connect(connection_string)
-cur = conn.cursor()
-cur.execute("SELECT EXISTS ( SELECT FROM pg_tables WHERE tablename = 'langchain_pg_embedding' )")
-table_exists = cur.fetchone()[0]
-
 # Connect to our postgres database vector store via pgvector.
+embeddings = OpenAIEmbeddings()
 vectorstore = PGVector(
    embedding_function=embeddings,
    collection_name=st.secrets['PGVECTOR_COLLECTION_NAME'],
@@ -113,19 +105,39 @@ vectorstore = PGVector(
    )
 )
 
-if not table_exists:
+# Learning Materials: DB of vectorized learning materials from the prior week. 
+# The bot should reference these materials when providing feedback on the 
+# student reflection, referencing what content was covered in the learning 
+# materials, or what materials to review again to improve understanding.
+papers = [
+    'srlpaper.pdf',
+]
+
+# Create vectors if they don't exist.
+papers_to_add = []
+for paper in papers:
+    docs = vectorstore.similarity_search('srlpaper.pdf')
+    found_paper = False
+    for doc in docs:
+        if paper == doc.metadata['source']:
+            found_paper = True
+            break
+    if not found_paper:
+        papers_to_add.append(paper)
+if papers_to_add:
     # Load course data with PDFPlumber: $ python3 -m pip install pdfplumber
     from langchain.document_loaders import PDFPlumberLoader
-    loader = PDFPlumberLoader("srlpaper.pdf")
-    pages = loader.load()
-    text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size = 1000,
-        chunk_overlap = 200,
-        length_function = len,
-    )
-    docs = text_splitter.split_documents(pages)
-    print('This is some string')
-    vectorstore.add_documents(docs)
+    for paper in papers_to_add:    
+        loader = PDFPlumberLoader(paper)
+        pages = loader.load()
+        text_splitter = RecursiveCharacterTextSplitter(
+            chunk_size = 1000,
+            chunk_overlap = 200,
+            length_function = len,
+        )
+        docs = text_splitter.split_documents(pages)
+        vectorstore.add_documents(docs)
+        print('Added vectors for paper: ', paper)
 
 # See: https://www.pinecone.io/learn/series/langchain/langchain-retrieval-augmentation/
 #search_readings_chain = RetrievalQA.from_chain_type(llm=llm, chain_type="stuff", retriever=vectorstore.as_retriever())
