@@ -27,11 +27,11 @@ def get_session_id() -> str:
 
 # Initialize connection string for PostgreSQL storage
 #connection_string="postgresql://{pg_user}:{pg_pass}@{pg_host}/{pg_db}".format(
-        pg_user=os.environ.get('PG_USER'),
-        pg_pass=os.environ.get('PG_PASS'),
-        pg_host=os.environ.get('PG_HOST'),
-        pg_db=os.environ.get('PG_DB')
-    )
+#   pg_user=os.environ.get('PG_USER'),
+#   pg_pass=os.environ.get('PG_PASS'),
+#   pg_host=os.environ.get('PG_HOST'),
+#   pg_db=os.environ.get('PG_DB')
+#)
 
 #db_history = PostgresChatMessageHistory(
 #   connection_string=connection_string,
