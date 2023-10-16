@@ -3,7 +3,7 @@ import streamlit as st
 import psycopg2
 
 # Set the OpenAI API Key
-temporary = os.environ.get['TEST', 'Could not get the value']
+temporary = os.environ.get("TEST", "Could not get the value")
 
 # Streamlit Code
 st.set_page_config(page_title="Sigma - Learning Mentor", page_icon=":robot:")
