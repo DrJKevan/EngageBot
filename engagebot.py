@@ -174,8 +174,7 @@ history = """
 Current conversation:
 {chat_history}
 Human: {input}
-AI Assistant: 
-{agent_scratchpad}"""
+AI Assistant: """
 
 system_message = role_description + analysis_instructions + rules + history
 
@@ -198,6 +197,9 @@ executor = AgentExecutor.from_agent_and_tools(
 # This callback is not necessary for the agent to function, but it is useful for tracking token usage.
 def run_query_and_count_tokens(chain, query):
     with get_openai_callback() as cb:
+        print('query \n')
+        print(query)
+        print('query end \n')
         result = chain.run(query)
         print(cb)
     return result
