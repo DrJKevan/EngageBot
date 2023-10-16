@@ -79,8 +79,7 @@ if prompt := st.chat_input("What is up?"):
 
   # Display assistant thinking animation in chat message container
   with st.chat_message("assistant"):
-    response = "The prompt worked!"
+    st.markdown = "The prompt worked!"
 
     # Replace the "thinking" animation with the chatbot's response
-    message_placeholder.markdown(response)
-    st.session_state.messages.append({"role": "assistant", "content": response})
+        st.session_state.messages.append({"role": "assistant", "content": "yea!"})
