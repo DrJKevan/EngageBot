@@ -2,14 +2,8 @@ import os
 import streamlit as st
 import psycopg2
 
-# Specify the path to the .env file
-dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
-
-# Load the .env file
-load_dotenv(dotenv_path)
-
 # Set the OpenAI API Key
-temporary = os.getenv['Test']
+temporary = os.environ.get['TEST']
 
 # Streamlit Code
 st.set_page_config(page_title="Sigma - Learning Mentor", page_icon=":robot:")
