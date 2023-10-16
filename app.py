@@ -2,6 +2,15 @@ import os
 import streamlit as st
 import psycopg2
 
+# Specify the path to the .env file
+dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
+
+# Load the .env file
+load_dotenv(dotenv_path)
+
+# Set the OpenAI API Key
+temporary = os.getenv['Test']
+
 # Streamlit Code
 st.set_page_config(page_title="Sigma - Learning Mentor", page_icon=":robot:")
 
@@ -79,7 +88,6 @@ if prompt := st.chat_input("What is up?"):
 
   # Display assistant thinking animation in chat message container
   with st.chat_message("assistant"):
-    temporary = st.secrets['Test']
     st.markdown(temporary)
 
     # Replace the "thinking" animation with the chatbot's response
