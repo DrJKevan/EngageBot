@@ -83,3 +83,7 @@ if prompt := st.chat_input("What is up?"):
 
     # Replace the "thinking" animation with the chatbot's response
     st.session_state.messages.append({"role": "assistant", "content": "yea!"})
+
+
+print ('checking print function')
+
