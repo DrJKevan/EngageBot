@@ -1,0 +1,75 @@
+{
+  "version": 1,
+  "locale": "English_United States.1252",
+  "metadata": {
+    "appmode": "python-streamlit",
+    "entrypoint": "app"
+  },
+  "python": {
+    "version": "3.11.5",
+    "package_manager": {
+      "name": "pip",
+      "version": "23.2.1",
+      "package_file": "requirements.txt"
+    }
+  },
+  "files": {
+    "requirements.txt": {
+      "checksum": "d308bb5b52643ba10cdd572b197c025c"
+    },
+    ".db/chat_history.db": {
+      "checksum": "f4e47e2433aa60bb2a9083498ca38a35"
+    },
+    ".devcontainer/devcontainer.json": {
+      "checksum": "630ae0483ed16d988639219e70a5b9b3"
+    },
+    ".gitignore": {
+      "checksum": "2edaf75db444dc3b4ee1df8bc866656c"
+    },
+    ".streamlit/secrets.toml": {
+      "checksum": "01b43404259001663ec8f353e2d58659"
+    },
+    "Examples/demo1.py": {
+      "checksum": "0a4186a51f6229360473151ac89f5d5d"
+    },
+    "Examples/engagebot.db": {
+      "checksum": "6c8781de181c9f5c433166c2d5229a31"
+    },
+    "Examples/promptVersions.txt": {
+      "checksum": "3296ea12921b2f2c043635bc6013f8d4"
+    },
+    "Examples/simple_chat_model.py": {
+      "checksum": "5dc4b9775f3ae22a9d809548f4cbc2cd"
+    },
+    "Examples/streamlit_LLM.py": {
+      "checksum": "f940a1a7ca8762d492c68901b34ca67d"
+    },
+    "Examples/streamlit_agent_textLLM.py": {
+      "checksum": "804a7c57ff6c287e95487e84110c3219"
+    },
+    "Examples/streamlit_basic.py": {
+      "checksum": "0818521877baa4a50eba24d681965871"
+    },
+    "README.md": {
+      "checksum": "ba34bfcb87e50c1edd4ad4c1b1d137d0"
+    },
+    "chatbot_GIST330": {
+      "checksum": "68072836c9ab8828196e567d8c4ffac0"
+    },
+    "conversationalAgent": {
+      "checksum": "d43f129195f776a1eb2c878c3ad95458"
+    },
+    "engagebot.py": {
+      "checksum": "68072836c9ab8828196e567d8c4ffac0"
+    },
+    "examples.txt": {
+      "checksum": "1e2254edde33a592b158f37e48c5e641"
+    },
+    "langchain_Pinecone.py": {
+      "checksum": "5f00ef8fa30381fc8f68c5fa311176dd"
+    },
+    "srlpaper.pdf": {
+      "checksum": "0b2ffa92586d2fbe6b8a852df8e02387"
+    }
+  }
+}
