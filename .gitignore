@@ -4,3 +4,4 @@ env
 .streamlit/secrets.toml
 .db/chat_history.db
 .DS_Store
+rsconnect-python
