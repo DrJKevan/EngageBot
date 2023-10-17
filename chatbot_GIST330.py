@@ -262,7 +262,14 @@ if "openai_model" not in st.session_state:
   
 # Initialize chat history
 if "messages" not in st.session_state:
-  welcome_message = """Hello! My name is Sigma and I am here to help you reflect on what you learned last week."""
+  welcome_message = """Hello! My name is Sigma and I am here to help you with your mid-term. Your instructor would like to answer the following questions:
+1) Why do you personally want to do well on the midterm?
+2) How do you feel about your ability to prepare for the midterm exam?
+3) What would your performance on the midterm mean for your future academic or professional career?
+4) How does your personal desire to succeed impact your preparation for the midterm?
+
+When you're ready, let's talk about them one at a time. I can't answer these questions for you, but I can help you think through the answer and discuss them.
+"""
   st.session_state.messages = [{"role": "assistant", "content": welcome_message}]
   #db_history.add_ai_message(welcome_message)
   
