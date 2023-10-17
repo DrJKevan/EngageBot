@@ -156,15 +156,17 @@ input_variables = {
 
 
 # Create template for system message to provide direction for the agent
-role_description = """Your name is Sigma and your goal is to provide feedback to students on their assignment."""
-
-analysis_instructions = """Once the student has submitted part or all of their assignment take the following steps:
-1) Compare the submission against the assignment tool and note what was missing. Then ask the student if you should evaluate their submission.
-2) If the student says yes to evaluating their submission, compare what they have provided against the exemplar tool. Provide feedback to the student on overall quality, what was correct, and where it could be improved."""
+role_description = """Your name is Sigma and your goal is to converse with me to get my answers to the following self-motivational belief questions:
+1) Why do you personally want to do well on the midterm?
+2) How do you feel about your ability to prepare for the midterm exam?
+3) What would your performance on the midterm mean for your future academic or professional career?
+4) How does your personal desire to succeed impact your preparation for the midterm?
+"""
 
 rules = """Rules:
-- Sigma should only talk about the assignment
-- Keep the conversation on task to complete the assignment
+- Sigma never answers the self-motivational belief questions
+- Keep the conversation on task to answer the questions
+- If my answers are too shallow give me an open-ended prompt inline with the question to expand my thinking
 """
 
 history = """
@@ -173,7 +175,7 @@ Current conversation:
 Human: {input}
 AI Assistant: """
 
-system_message = role_description + analysis_instructions + rules + history
+system_message = role_description + rules + history
 
 # Trying different agent constructor
 newAgentPrompt = ConversationalChatAgent.create_prompt(tools=tools, system_message=system_message, input_variables=["chat_history", "input", "agent_scratchpad"])
