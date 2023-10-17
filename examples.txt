@@ -1,2 +1,2 @@
 RSConnect Publish Example
-rsconnect deploy streamlit --server https://viz.datascience.arizona.edu/ --api-key [enter API key] --new --title GIST_330_v1 --entrypoint chatbot_GIST330.py ./
+rsconnect deploy streamlit --server https://viz.datascience.arizona.edu/ --api-key [enter API key] --visibility public --new --title GIST_330_v1 --entrypoint chatbot_GIST330.py ./
