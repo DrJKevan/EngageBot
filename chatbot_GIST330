@@ -27,16 +27,16 @@ def get_session_id() -> str:
 
 # Initialize connection string for PostgreSQL storage
 connection_string="postgresql://{pg_user}:{pg_pass}@{pg_host}/{pg_db}".format(
-        pg_user=st.secrets['PG_USER'],
-        pg_pass=st.secrets['PG_PASS'],
-        pg_host=st.secrets['PG_HOST'],
-        pg_db=st.secrets['PG_DB']
-    )
-
-db_history = PostgresChatMessageHistory(
-   connection_string=connection_string,
-    session_id=get_session_id() # Unique UUID for each session.
+   pg_user=os.environ.get('PG_USER'),
+   pg_pass=os.environ.get('PG_PASS'),
+   pg_host=os.environ.get('PG_HOST'),
+   pg_db=os.environ.get('PG_DB')
 )
+
+#db_history = PostgresChatMessageHistory(
+#   connection_string=connection_string,
+#   session_id=get_session_id() # Unique UUID for each session.
+# )
 
 # Hack to get multi-input tools working again.
 # See: https://github.com/langchain-ai/langchain/issues/3700#issuecomment-1568735481
@@ -44,11 +44,7 @@ from langchain.agents.conversational_chat.base import ConversationalChatAgent
 ConversationalChatAgent._validate_tools = lambda *_, **__: ...
 
 # Set the OpenAI API Key
-# cli command = streamlit run engagebot.py
-os.environ['OPENAI_API_KEY'] = st.secrets['OPENAI_API_KEY']
-
-# Use next line when pull from local .env file
-api_key = os.getenv("OPENAI_API_KEY")
+api_key = os.environ.get("OPENAI_API_KEY")
 
 # Define available OpenAI models
 models = ["gpt-3.5-turbo", "gpt-3.5-turbo-0301", "gpt-3.5-turbo-0613", "gpt-3.5-turbo-16k", "gpt-3.5-turbo-16k-0613", "gpt-4", "gpt-4-0314", "gpt-4-0613"]
@@ -92,18 +88,18 @@ class Assignment (BaseTool):
     
 # Connect to our postgres database vector store via pgvector.
 embeddings = OpenAIEmbeddings()
-vectorstore = PGVector(
-   embedding_function=embeddings,
-   collection_name=st.secrets['PGVECTOR_COLLECTION_NAME'],
-   connection_string=PGVector.connection_string_from_db_params(
-      driver="psycopg2",
-      host=st.secrets['PG_HOST'],
-      port=st.secrets['PG_PORT'],
-      database=st.secrets['PG_DB'],
-      user=st.secrets['PG_USER'],
-      password=st.secrets['PG_PASS'],
-   )
-)
+#vectorstore = PGVector(
+#   embedding_function=embeddings,
+#   collection_name=os.environ.get('PGVECTOR_COLLECTION_NAME'),
+#   connection_string=PGVector.connection_string_from_db_params(
+#      driver="psycopg2",
+#      host=os.environ.get('PG_HOST'),
+#      port=os.environ.get('PG_PORT'),
+#      database=os.environ.get('PG_DB'),
+#      user=os.environ.get('PG_USER'),
+#      password=os.environ.get('PG_PASS'),
+#   )
+#)
 
 # Learning Materials: DB of vectorized learning materials from the prior week. 
 # The bot should reference these materials when providing feedback on the 
@@ -114,42 +110,43 @@ papers = [
 ]
 
 # Create vectors if they don't exist.
-papers_to_add = []
-for paper in papers:
-    docs = vectorstore.similarity_search('srlpaper.pdf')
-    found_paper = False
-    for doc in docs:
-        if paper == doc.metadata['source']:
-            found_paper = True
-            break
-    if not found_paper:
-        papers_to_add.append(paper)
-if papers_to_add:
-    # Load course data with PDFPlumber: $ python3 -m pip install pdfplumber
-    from langchain.document_loaders import PDFPlumberLoader
-    for paper in papers_to_add:    
-        loader = PDFPlumberLoader(paper)
-        pages = loader.load()
-        text_splitter = RecursiveCharacterTextSplitter(
-            chunk_size = 1000,
-            chunk_overlap = 200,
-            length_function = len,
-        )
-        docs = text_splitter.split_documents(pages)
-        vectorstore.add_documents(docs)
-        print('Added vectors for paper: ', paper)
+#papers_to_add = []
+#for paper in papers:
+#    docs = vectorstore.similarity_search('srlpaper.pdf')
+#    found_paper = False
+#    for doc in docs:
+#        if paper == doc.metadata['source']:
+#            found_paper = True
+#            break
+#    if not found_paper:
+#        papers_to_add.append(paper)
+#if papers_to_add:
+#    # Load course data with PDFPlumber: $ python3 -m pip install pdfplumber
+#    from langchain.document_loaders import PDFPlumberLoader
+#    for paper in papers_to_add:    
+#        loader = PDFPlumberLoader(paper)
+#        pages = loader.load()
+#        text_splitter = RecursiveCharacterTextSplitter(
+#            chunk_size = 1000,
+#            chunk_overlap = 200,
+#            length_function = len,
+#        )
+#        docs = text_splitter.split_documents(pages)
+#        vectorstore.add_documents(docs)
+#        print('Added vectors for paper: ', paper)
 
 # See: https://www.pinecone.io/learn/series/langchain/langchain-retrieval-augmentation/
 #search_readings_chain = RetrievalQA.from_chain_type(llm=llm, chain_type="stuff", retriever=vectorstore.as_retriever())
-search_readings_tool = Tool(
-   name="Class Assignment Readings",
-   #func=search_readings_chain.run
-   func = vectorstore.similarity_search,
-   description="useful for when you need to search class readings for a specific topic"
-)
+#search_readings_tool = Tool(
+#   name="Class Assignment Readings",
+#   #func=search_readings_chain.run
+#   func = vectorstore.similarity_search,
+#   description="useful for when you need to search class readings for a specific topic"
+#)
 
 # Define tools
-tools = [Exemplar(), Assignment(), search_readings_tool]
+#tools = [Exemplar(), Assignment(), search_readings_tool]
+tools = [Exemplar(), Assignment()]
 
 # Define the input variables
 input_variables = {
@@ -265,7 +262,7 @@ if "openai_model" not in st.session_state:
 if "messages" not in st.session_state:
   welcome_message = """Hello! My name is Sigma and I am here to help you reflect on what you learned last week."""
   st.session_state.messages = [{"role": "assistant", "content": welcome_message}]
-  db_history.add_ai_message(welcome_message)
+  #db_history.add_ai_message(welcome_message)
   
 # Display chat messages from history on app rerun
 for message in st.session_state.messages:
@@ -276,7 +273,7 @@ for message in st.session_state.messages:
 if prompt := st.chat_input("What is up?"):
   # Add user message to chat history
   st.session_state.messages.append({"role":"user", "content":prompt})
-  db_history.add_user_message(prompt)
+  #db_history.add_user_message(prompt)
   # Display user message in chat message container
   with st.chat_message("user"):
     st.markdown(prompt)
@@ -295,7 +292,7 @@ if prompt := st.chat_input("What is up?"):
     # Replace the "thinking" animation with the chatbot's response
     message_placeholder.markdown(response)
     st.session_state.messages.append({"role": "assistant", "content": response})
-    db_history.add_ai_message(response)
+    #db_history.add_ai_message(response)
 
 
 
