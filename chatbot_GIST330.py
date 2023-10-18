@@ -146,13 +146,7 @@ papers = [
 
 # Define tools
 #tools = [Exemplar(), Assignment(), search_readings_tool]
-tools = [Exemplar(), Assignment()]
-
-# Define the input variables
-input_variables = {
-    "student_name": "Alice",
-    "topic_name": "Self-regulated learning"
-}
+tools = []
 
 
 # Create template for system message to provide direction for the agent
@@ -167,6 +161,8 @@ rules = """Rules:
 - Sigma never answers the self-motivational belief questions
 - Keep the conversation on task to answer the questions
 - If my answers are too shallow give me an open-ended prompt inline with the question to expand my thinking
+- Your responses should always end with a question, either the open-ended prompt or the next question to be answered.
+- When all self-motivational blief questions have been answered tell me the assignment is complete but I can continue to talk if I want to.
 """
 
 history = """
@@ -262,7 +258,7 @@ if "openai_model" not in st.session_state:
   
 # Initialize chat history
 if "messages" not in st.session_state:
-  welcome_message = """Hello! My name is Sigma and I am here to help you with your mid-term. Your instructor would like to answer the following questions:
+  welcome_message = """Hello! My name is Sigma and I am here to help you with your mid-term. Your instructor would like you to answer the following questions:
 1) Why do you personally want to do well on the midterm?
 2) How do you feel about your ability to prepare for the midterm exam?
 3) What would your performance on the midterm mean for your future academic or professional career?
