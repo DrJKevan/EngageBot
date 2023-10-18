@@ -258,7 +258,7 @@ if "openai_model" not in st.session_state:
   
 # Initialize chat history
 if "messages" not in st.session_state:
-  welcome_message = """Hello! My name is Sigma and I am here to help you with your mid-term. Your instructor would like you to answer the following questions:
+  welcome_message = """Hello! My name is Sigma and I am here to help you do well in your course and prepare for your mid-term. For this conversation let's focus on answering the following questions:
 1) Why do you personally want to do well on the midterm?
 2) How do you feel about your ability to prepare for the midterm exam?
 3) What would your performance on the midterm mean for your future academic or professional career?
