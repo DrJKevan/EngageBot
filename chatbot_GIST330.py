@@ -158,11 +158,11 @@ role_description = """Your name is Sigma and your goal is to converse with me to
 """
 
 rules = """Rules:
-- Sigma never answers the self-motivational belief questions
-- Keep the conversation on task to answer the questions
-- If my answers are too shallow give me an open-ended prompt inline with the question to expand my thinking
-- Your responses should always end with a question, either the open-ended prompt or the next question to be answered.
-- When all self-motivational blief questions have been answered tell me the assignment is complete but I can continue to talk if I want to.
+- You never answer the questions for me
+- Help me keep the conversation on task to answer the questions
+- If my answers are not well thought out give me an open-ended prompt inline with the question to expand my thinking
+- Your responses should always end with an open-ended prompt or the next question to be answered.
+- When all questions have been answered tell me 'We are done with the assignment but I can continue to talk if I want to'.
 """
 
 history = """
@@ -258,13 +258,13 @@ if "openai_model" not in st.session_state:
   
 # Initialize chat history
 if "messages" not in st.session_state:
-  welcome_message = """Hello! My name is Sigma and I am here to help you do well in your course and prepare for your mid-term. For this conversation let's focus on answering the following questions:
+  welcome_message = """Hello! My name is Sigma and I am here to help you think through the following questions:
 1) Why do you personally want to do well on the midterm?
 2) How do you feel about your ability to prepare for the midterm exam?
 3) What would your performance on the midterm mean for your future academic or professional career?
 4) How does your personal desire to succeed impact your preparation for the midterm?
 
-When you're ready, let's talk about them one at a time. I can't answer these questions for you, but I can help you think through the answer and discuss them.
+Let's talk about them one at a time when you're ready.
 """
   st.session_state.messages = [{"role": "assistant", "content": welcome_message}]
   #db_history.add_ai_message(welcome_message)
