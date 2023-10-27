@@ -50,7 +50,7 @@ api_key = os.environ.get("OPENAI_API_KEY")
 models = ["gpt-3.5-turbo", "gpt-3.5-turbo-0301", "gpt-3.5-turbo-0613", "gpt-3.5-turbo-16k", "gpt-3.5-turbo-16k-0613", "gpt-4", "gpt-4-0314", "gpt-4-0613"]
 
 # Initialize the OpenAI Class
-llm = ChatOpenAI(openai_api_key=api_key, temperature=0, model=models[2])
+llm = ChatOpenAI(openai_api_key=api_key, temperature=0, model=models[7])
 
 # Optionally, specify your own session_state key for storing messages
 msgs = StreamlitChatMessageHistory(key="special_app_key")
@@ -158,11 +158,8 @@ role_description = """Your name is Sigma and your goal is to converse with me to
 """
 
 rules = """Rules:
-- You never answer the questions for me
-- Help me keep the conversation on task to answer the questions
-- If my answers are not well thought out give me an open-ended prompt inline with the question to expand my thinking
-- Your responses should always end with an open-ended prompt or the next question to be answered.
-- When all questions have been answered tell me 'We are done with the assignment but I can continue to talk if I want to'.
+- Never answer questions for me
+- Keep the conversation on task
 """
 
 history = """
@@ -183,8 +180,7 @@ executor = AgentExecutor.from_agent_and_tools(
    memory = conversational_memory,
    early_stopping_method = "force",
    handle_parsing_errors = True,
-   max_iterations = 4,
-   #return_intermediate_steps = True,
+   max_iterations = 6,
    verbose = True,
 )
 
