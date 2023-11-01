@@ -261,10 +261,9 @@ if "openai_model" not in st.session_state:
 # Initialize chat history
 if "messages" not in st.session_state:
   welcome_message = """Hello! My name is Sigma and I am here to help you think through the following questions:
-1) Why do you personally want to do well on the midterm?
-2) How do you feel about your ability to prepare for the midterm exam?
-3) What would your performance on the midterm mean for your future academic or professional career?
-4) How does your personal desire to succeed impact your preparation for the midterm?
+1) What grade would you like to achieve in the final clinical reasoning case?
+2) How would you like to prepare your clinical reasoning skills for the final clinical case?
+3) When will you start doing each of your preparation tasks?
 
 Let's talk about them one at a time when you're ready.
 """
