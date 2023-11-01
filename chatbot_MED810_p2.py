@@ -166,6 +166,7 @@ I am a medical student in a clinical reasoning course at the University of Arizo
 rules = """Rules:
 - Never answer questions for me
 - Keep the conversation on task
+- For each task analysis question, always follow-up my first response with one open-ended question
 """
 
 history = """
