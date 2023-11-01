@@ -155,7 +155,7 @@ tools = []
 
 # Create template for system message to provide direction for the agent
 role_description = """Your name is Sigma and your goal is to converse with me to get my answers to the following task analysis questions:
-1) What grade would you like to achieve in the final clinical reasoning case?
+1) What grade would you like to achieve in the final clinical reasoning case and why?
 2) How would you like to prepare your clinical reasoning skills for the final clinical case?
 3) When will you start doing each of your preparation tasks?
 """
@@ -261,7 +261,7 @@ if "openai_model" not in st.session_state:
 # Initialize chat history
 if "messages" not in st.session_state:
   welcome_message = """Hello! My name is Sigma and I am here to help you think through the following questions:
-1) What grade would you like to achieve in the final clinical reasoning case?
+1) What grade would you like to achieve in the final clinical reasoning case and why?
 2) How would you like to prepare your clinical reasoning skills for the final clinical case?
 3) When will you start doing each of your preparation tasks?
 
