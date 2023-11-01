@@ -15,7 +15,7 @@ from langchain.tools import BaseTool, Tool
 from langchain.vectorstores.pgvector import PGVector
 from streamlit.runtime.scriptrunner import get_script_run_ctx
 
-os.environ['LANGCHAIN_PROJECT']="GIST330-test.py"  # if not specified, defaults to "default"
+os.environ['LANGCHAIN_PROJECT']="MED810_p2"  # if not specified, defaults to "default"
 
 # Get session info so we can uniquely identify sessions in chat history table.
 def get_session_id() -> str:
