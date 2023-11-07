@@ -155,7 +155,7 @@ tools = []
 
 # Create template for system message to provide direction for the agent
 role_description = """Your name is Sigma and your goal is to converse with me to get my answers to the following task analysis questions:
-1) What grade would you like to achieve in the final clinical reasoning case and why?
+1) What percent correct would you like to achieve on the final clinical reasoning case and why?
 2) How would you like to prepare your clinical reasoning skills for the final clinical case?
 3) When will you start doing each of your preparation tasks?
 """
