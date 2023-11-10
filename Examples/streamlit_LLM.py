@@ -13,9 +13,6 @@ from langchain import PromptTemplate
 # Load the .env file
 #load_dotenv(dotenv_path)
 
-# Set the OpenAI API Key
-#openai_api_key = os.getenv("OPENAI_API_KEY")
-
 # Streamlit Code
 st.set_page_config(page_title="Globalize Email", page_icon = ":robot:")
 st.header("Globalize Text")
@@ -48,13 +45,7 @@ prompt = PromptTemplate(
     template = template,
 )
 
-openai_api_key = os.environ.get('OPENAI_API_KEY')
-
-def load_LLM():
-    llm = OpenAI(openai_api_key=openai_api_key, temperature = .5)
-    return llm
-
-llm = load_LLM()
+llm = OpenAI(temperature = .5)
 
 col1, col2 = st. columns(2)
 

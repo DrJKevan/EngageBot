@@ -43,13 +43,6 @@ db_history = PostgresChatMessageHistory(
 from langchain.agents.conversational_chat.base import ConversationalChatAgent
 ConversationalChatAgent._validate_tools = lambda *_, **__: ...
 
-# Set the OpenAI API Key
-# cli command = streamlit run engagebot.py
-os.environ['OPENAI_API_KEY'] = st.secrets['OPENAI_API_KEY']
-
-# Use next line when pull from local .env file
-api_key = os.getenv("OPENAI_API_KEY")
-
 # Define available OpenAI models
 models = ["gpt-3.5-turbo", "gpt-3.5-turbo-0301", "gpt-3.5-turbo-0613", "gpt-3.5-turbo-16k", "gpt-3.5-turbo-16k-0613", "gpt-4", "gpt-4-0314", "gpt-4-0613"]
 
