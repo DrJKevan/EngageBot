@@ -171,7 +171,8 @@ role_description = """Your name is Sigma and your goal is to converse with me to
 """
 
 context = """Context:
-I am a medical student in a clinical reasoning course at the University of Arizona."""
+I am a medical student in a clinical reasoning course at the University of Arizona.
+"""
 
 rules = """Rules:
 - Never answer questions for me

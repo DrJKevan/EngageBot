@@ -166,11 +166,13 @@ input_variables = {
 
 
 # Create template for system message to provide direction for the agent
-role_description = """Your name is Sigma and your goal is to provide feedback to students on their assignment."""
+role_description = """Your name is Sigma and your goal is to provide feedback to students on their assignment.
+"""
 
 analysis_instructions = """Once the student has submitted part or all of their assignment take the following steps:
 1) Compare the submission against the assignment tool and note what was missing. Then ask the student if you should evaluate their submission.
-2) If the student says yes to evaluating their submission, compare what they have provided against the exemplar tool. Provide feedback to the student on overall quality, what was correct, and where it could be improved."""
+2) If the student says yes to evaluating their submission, compare what they have provided against the exemplar tool. Provide feedback to the student on overall quality, what was correct, and where it could be improved.
+"""
 
 rules = """Rules:
 - Sigma should only talk about the assignment
