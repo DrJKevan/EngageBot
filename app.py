@@ -31,10 +31,10 @@ def get_session_id() -> str:
 
 # Initialize connection string for PostgreSQL storage
 connection_string="postgresql://{pg_user}:{pg_pass}@{pg_host}/{pg_db}".format(
-   pg_user=os.getenv('PG_USER'),
-   pg_pass=os.getenv('PG_PASS'),
-   pg_host=os.getenv('PG_HOST'),
-   pg_db=os.getenv('PG_DB')
+    pg_user=os.getenv('PG_USER'),
+    pg_pass=os.getenv('PG_PASS'),
+    pg_host=os.getenv('PG_HOST'),
+    pg_db=os.getenv('PG_DB')
 )
 
 #db_history = PostgresChatMessageHistory(
@@ -48,7 +48,16 @@ from langchain.agents.conversational_chat.base import ConversationalChatAgent
 ConversationalChatAgent._validate_tools = lambda *_, **__: ...
 
 # Define available OpenAI models
-models = ["gpt-3.5-turbo", "gpt-3.5-turbo-0301", "gpt-3.5-turbo-0613", "gpt-3.5-turbo-16k", "gpt-3.5-turbo-16k-0613", "gpt-4", "gpt-4-0314", "gpt-4-0613"]
+models = [
+    "gpt-3.5-turbo", 
+    "gpt-3.5-turbo-0301", 
+    "gpt-3.5-turbo-0613", 
+    "gpt-3.5-turbo-16k", 
+    "gpt-3.5-turbo-16k-0613", 
+    "gpt-4", 
+    "gpt-4-0314", 
+    "gpt-4-0613",
+]
 
 # Initialize the OpenAI Class
 llm = ChatOpenAI(temperature=0, model=models[2])
@@ -181,14 +190,14 @@ newAgentPrompt = ConversationalChatAgent.create_prompt(tools=tools, system_messa
 llm_chain = LLMChain(llm=llm, prompt=newAgentPrompt)
 agent = ConversationalChatAgent(llm_chain=llm_chain, tools=tools, verbose=True)
 executor = AgentExecutor.from_agent_and_tools(
-   agent = agent,
-   tools = tools,
-   memory = conversational_memory,
-   early_stopping_method = "force",
-   handle_parsing_errors = True,
-   max_iterations = 4,
-   #return_intermediate_steps = True,
-   verbose = True,
+    agent = agent,
+    tools = tools,
+    memory = conversational_memory,
+    early_stopping_method = "force",
+    handle_parsing_errors = True,
+    max_iterations = 4,
+    #return_intermediate_steps = True,
+    verbose = True,
 )
 
 # Add a callback to count the number of tokens used for each response.
@@ -257,43 +266,43 @@ response_style = """
 
 # Set a default model
 if "openai_model" not in st.session_state:
-  st.session_state["openai_model"] = "gpt-3.5-turbo"
+    st.session_state["openai_model"] = "gpt-3.5-turbo"
   
 # Initialize chat history
 if "messages" not in st.session_state:
-  welcome_message = """Hello! My name is Sigma and I am here to help you reflect on what you learned last week."""
-  st.session_state.messages = [{"role": "assistant", "content": welcome_message}]
-  #db_history.add_ai_message(welcome_message)
+    welcome_message = """Hello! My name is Sigma and I am here to help you reflect on what you learned last week."""
+    st.session_state.messages = [{"role": "assistant", "content": welcome_message}]
+    #db_history.add_ai_message(welcome_message)
   
 # Display chat messages from history on app rerun
 for message in st.session_state.messages:
-  with st.chat_message(message["role"]):
-    st.markdown(message["content"])
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"])
 
 # Accept user input
 if prompt := st.chat_input("What is up?"):
-  # Add user message to chat history
-  st.session_state.messages.append({"role":"user", "content":prompt})
-  #db_history.add_user_message(prompt)
-  # Display user message in chat message container
-  with st.chat_message("user"):
-    st.markdown(prompt)
+    # Add user message to chat history
+    st.session_state.messages.append({"role":"user", "content":prompt})
+    #db_history.add_user_message(prompt)
+    # Display user message in chat message container
+    with st.chat_message("user"):
+        st.markdown(prompt)
 
-  # Display assistant thinking animation in chat message container
-  with st.chat_message("assistant"):
-    # This placeholder will initially show the "thinking" animation
-    message_placeholder = st.empty()
-    message_placeholder.markdown('<div class="typing-animation"></div>', unsafe_allow_html=True) # Simple 3 dots "thinking" animation
-    
-    # Get the response from the chatbot
-    #response = executor.run(prompt)
-    #print(conversational_memory.buffer_as_messages) - Uncomment to see message log
-    response = run_query_and_count_tokens(executor, prompt)
+    # Display assistant thinking animation in chat message container
+    with st.chat_message("assistant"):
+        # This placeholder will initially show the "thinking" animation
+        message_placeholder = st.empty()
+        message_placeholder.markdown('<div class="typing-animation"></div>', unsafe_allow_html=True) # Simple 3 dots "thinking" animation
+        
+        # Get the response from the chatbot
+        #response = executor.run(prompt)
+        #print(conversational_memory.buffer_as_messages) - Uncomment to see message log
+        response = run_query_and_count_tokens(executor, prompt)
 
-    # Replace the "thinking" animation with the chatbot's response
-    message_placeholder.markdown(response)
-    st.session_state.messages.append({"role": "assistant", "content": response})
-    #db_history.add_ai_message(response)
+        # Replace the "thinking" animation with the chatbot's response
+        message_placeholder.markdown(response)
+        st.session_state.messages.append({"role": "assistant", "content": response})
+        #db_history.add_ai_message(response)
 
 
 

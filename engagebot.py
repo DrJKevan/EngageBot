@@ -38,7 +38,7 @@ connection_string="postgresql://{pg_user}:{pg_pass}@{pg_host}/{pg_db}".format(
 )
 
 db_history = PostgresChatMessageHistory(
-   connection_string=connection_string,
+    connection_string=connection_string,
     session_id=get_session_id() # Unique UUID for each session.
 )
 
@@ -90,16 +90,16 @@ class Assignment (BaseTool):
 # Connect to our postgres database vector store via pgvector.
 embeddings = OpenAIEmbeddings()
 vectorstore = PGVector(
-   embedding_function=embeddings,
-   collection_name=os.getenv('PGVECTOR_COLLECTION_NAME'),
-   connection_string=PGVector.connection_string_from_db_params(
-      driver="psycopg2",
-      host=os.getenv('PG_HOST'),
-      port=os.getenv('PG_PORT'),
-      database=os.getenv('PG_DB'),
-      user=os.getenv('PG_USER'),
-      password=os.getenv('PG_PASS'),
-   )
+    embedding_function=embeddings,
+    collection_name=os.getenv('PGVECTOR_COLLECTION_NAME'),
+    connection_string=PGVector.connection_string_from_db_params(
+        driver="psycopg2",
+        host=os.getenv('PG_HOST'),
+        port=os.getenv('PG_PORT'),
+        database=os.getenv('PG_DB'),
+        user=os.getenv('PG_USER'),
+        password=os.getenv('PG_PASS'),
+    )
 )
 
 # Learning Materials: DB of vectorized learning materials from the prior week. 
@@ -139,10 +139,10 @@ if papers_to_add:
 # See: https://www.pinecone.io/learn/series/langchain/langchain-retrieval-augmentation/
 #search_readings_chain = RetrievalQA.from_chain_type(llm=llm, chain_type="stuff", retriever=vectorstore.as_retriever())
 search_readings_tool = Tool(
-   name="Class Assignment Readings",
-   #func=search_readings_chain.run
-   func = vectorstore.similarity_search,
-   description="useful for when you need to search class readings for a specific topic"
+    name="Class Assignment Readings",
+    #func=search_readings_chain.run
+    func = vectorstore.similarity_search,
+    description="useful for when you need to search class readings for a specific topic"
 )
 
 # Define tools
@@ -180,14 +180,14 @@ newAgentPrompt = ConversationalChatAgent.create_prompt(tools=tools, system_messa
 llm_chain = LLMChain(llm=llm, prompt=newAgentPrompt)
 agent = ConversationalChatAgent(llm_chain=llm_chain, tools=tools, verbose=True)
 executor = AgentExecutor.from_agent_and_tools(
-   agent = agent,
-   tools = tools,
-   memory = conversational_memory,
-   early_stopping_method = "force",
-   handle_parsing_errors = True,
-   max_iterations = 4,
-   #return_intermediate_steps = True,
-   verbose = True,
+    agent = agent,
+    tools = tools,
+    memory = conversational_memory,
+    early_stopping_method = "force",
+    handle_parsing_errors = True,
+    max_iterations = 4,
+    #return_intermediate_steps = True,
+    verbose = True,
 )
 
 # Add a callback to count the number of tokens used for each response.
@@ -256,43 +256,43 @@ response_style = """
 
 # Set a default model
 if "openai_model" not in st.session_state:
-  st.session_state["openai_model"] = "gpt-3.5-turbo"
+    st.session_state["openai_model"] = "gpt-3.5-turbo"
   
 # Initialize chat history
 if "messages" not in st.session_state:
-  welcome_message = """Hello! My name is Sigma and I am here to help you reflect on what you learned last week."""
-  st.session_state.messages = [{"role": "assistant", "content": welcome_message}]
-  db_history.add_ai_message(welcome_message)
+    welcome_message = """Hello! My name is Sigma and I am here to help you reflect on what you learned last week."""
+    st.session_state.messages = [{"role": "assistant", "content": welcome_message}]
+    db_history.add_ai_message(welcome_message)
   
 # Display chat messages from history on app rerun
 for message in st.session_state.messages:
-  with st.chat_message(message["role"]):
-    st.markdown(message["content"])
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"])
 
 # Accept user input
 if prompt := st.chat_input("What is up?"):
-  # Add user message to chat history
-  st.session_state.messages.append({"role":"user", "content":prompt})
-  db_history.add_user_message(prompt)
-  # Display user message in chat message container
-  with st.chat_message("user"):
-    st.markdown(prompt)
+    # Add user message to chat history
+    st.session_state.messages.append({"role":"user", "content":prompt})
+    db_history.add_user_message(prompt)
+    # Display user message in chat message container
+    with st.chat_message("user"):
+        st.markdown(prompt)
 
-  # Display assistant thinking animation in chat message container
-  with st.chat_message("assistant"):
-    # This placeholder will initially show the "thinking" animation
-    message_placeholder = st.empty()
-    message_placeholder.markdown('<div class="typing-animation"></div>', unsafe_allow_html=True) # Simple 3 dots "thinking" animation
-    
-    # Get the response from the chatbot
-    #response = executor.run(prompt)
-    #print(conversational_memory.buffer_as_messages) - Uncomment to see message log
-    response = run_query_and_count_tokens(executor, prompt)
+    # Display assistant thinking animation in chat message container
+    with st.chat_message("assistant"):
+        # This placeholder will initially show the "thinking" animation
+        message_placeholder = st.empty()
+        message_placeholder.markdown('<div class="typing-animation"></div>', unsafe_allow_html=True) # Simple 3 dots "thinking" animation
+        
+        # Get the response from the chatbot
+        #response = executor.run(prompt)
+        #print(conversational_memory.buffer_as_messages) - Uncomment to see message log
+        response = run_query_and_count_tokens(executor, prompt)
 
-    # Replace the "thinking" animation with the chatbot's response
-    message_placeholder.markdown(response)
-    st.session_state.messages.append({"role": "assistant", "content": response})
-    db_history.add_ai_message(response)
+        # Replace the "thinking" animation with the chatbot's response
+        message_placeholder.markdown(response)
+        st.session_state.messages.append({"role": "assistant", "content": response})
+        db_history.add_ai_message(response)
 
 
 
