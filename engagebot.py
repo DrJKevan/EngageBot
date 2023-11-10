@@ -31,11 +31,11 @@ def get_session_id() -> str:
 
 # Initialize connection string for PostgreSQL storage
 connection_string="postgresql://{pg_user}:{pg_pass}@{pg_host}/{pg_db}".format(
-        pg_user=st.secrets['PG_USER'],
-        pg_pass=st.secrets['PG_PASS'],
-        pg_host=st.secrets['PG_HOST'],
-        pg_db=st.secrets['PG_DB']
-    )
+    pg_user=os.environ.get('PG_USER'),
+    pg_pass=os.environ.get('PG_PASS'),
+    pg_host=os.environ.get('PG_HOST'),
+    pg_db=os.environ.get('PG_DB')
+)
 
 db_history = PostgresChatMessageHistory(
    connection_string=connection_string,
@@ -91,14 +91,14 @@ class Assignment (BaseTool):
 embeddings = OpenAIEmbeddings()
 vectorstore = PGVector(
    embedding_function=embeddings,
-   collection_name=st.secrets['PGVECTOR_COLLECTION_NAME'],
+   collection_name=os.environ.get('PGVECTOR_COLLECTION_NAME'),
    connection_string=PGVector.connection_string_from_db_params(
       driver="psycopg2",
-      host=st.secrets['PG_HOST'],
-      port=st.secrets['PG_PORT'],
-      database=st.secrets['PG_DB'],
-      user=st.secrets['PG_USER'],
-      password=st.secrets['PG_PASS'],
+      host=os.environ.get('PG_HOST'),
+      port=os.environ.get('PG_PORT'),
+      database=os.environ.get('PG_DB'),
+      user=os.environ.get('PG_USER'),
+      password=os.environ.get('PG_PASS'),
    )
 )
 
