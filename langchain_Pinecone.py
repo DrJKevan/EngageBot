@@ -16,9 +16,6 @@ dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
 # Load the .env file
 load_dotenv(dotenv_path)
 
-# Set the OpenAI API Key
-api_key = os.getenv("OPENAI_API_KEY")
-
 ## PREPARE DATASTORES
 # Initialize Pinecone
 # Dimensions = 1536
