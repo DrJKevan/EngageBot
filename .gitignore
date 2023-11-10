@@ -5,3 +5,4 @@ env
 .db/chat_history.db
 .DS_Store
 rsconnect-python
+.vscode
