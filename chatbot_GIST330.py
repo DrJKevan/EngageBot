@@ -15,6 +15,10 @@ from langchain.tools import BaseTool, Tool
 from langchain.vectorstores.pgvector import PGVector
 from streamlit.runtime.scriptrunner import get_script_run_ctx
 
+# Load environment variables from .env if it exists.
+from dotenv import load_dotenv
+load_dotenv()
+
 os.environ['LANGCHAIN_PROJECT']="GIST330-test.py"  # if not specified, defaults to "default"
 
 # Get session info so we can uniquely identify sessions in chat history table.

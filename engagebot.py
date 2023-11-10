@@ -15,6 +15,10 @@ from langchain.tools import BaseTool, Tool
 from langchain.vectorstores.pgvector import PGVector
 from streamlit.runtime.scriptrunner import get_script_run_ctx
 
+# Load environment variables from .env if it exists.
+from dotenv import load_dotenv
+load_dotenv()
+
 # Get session info so we can uniquely identify sessions in chat history table.
 def get_session_id() -> str:
     try:
