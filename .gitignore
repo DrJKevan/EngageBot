@@ -1,8 +1,10 @@
-venv/
 .env
-env
-.streamlit/secrets.toml
 .db/chat_history.db
 .DS_Store
 rsconnect-python
 .vscode
+
+# Old
+venv/
+env
+.streamlit/secrets.toml
