@@ -47,7 +47,7 @@ connection_string="postgresql://{pg_user}:{pg_pass}@{pg_host}/{pg_db}".format(
 from langchain.agents.conversational_chat.base import ConversationalChatAgent
 ConversationalChatAgent._validate_tools = lambda *_, **__: ...
 
-# Define available OpenAI models
+# Define available OpenAI models.
 models = [
     "gpt-3.5-turbo", 
     "gpt-3.5-turbo-0301", 
