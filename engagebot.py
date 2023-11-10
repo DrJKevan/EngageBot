@@ -178,13 +178,7 @@ rules = """Rules:
 - Keep the conversation on task to complete the assignment
 """
 
-history = """
-Current conversation:
-{chat_history}
-Human: {input}
-AI Assistant: """
-
-system_message = role_description + analysis_instructions + rules + history
+system_message = role_description + analysis_instructions + rules
 
 # Trying different agent constructor
 newAgentPrompt = ConversationalChatAgent.create_prompt(tools=tools, system_message=system_message, input_variables=["chat_history", "input", "agent_scratchpad"])
