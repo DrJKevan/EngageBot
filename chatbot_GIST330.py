@@ -1,6 +1,7 @@
 import os
 import streamlit as st
 import psycopg2
+import datetime
 
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.embeddings.openai import OpenAIEmbeddings
@@ -13,6 +14,7 @@ from langchain.agents import AgentExecutor
 from langchain.callbacks import get_openai_callback
 from langchain.tools import BaseTool, Tool
 from langchain.vectorstores.pgvector import PGVector
+from langchain.schema.messages import HumanMessage, AIMessage
 from streamlit.runtime.scriptrunner import get_script_run_ctx
 
 # Load environment variables from .env if it exists.
@@ -271,7 +273,10 @@ if "messages" not in st.session_state:
 Let's talk about them one at a time when you're ready.
 """
     st.session_state.messages = [{"role": "assistant", "content": welcome_message}]
-    #db_history.add_ai_message(welcome_message)
+    # db_history.add_message(AIMessage(
+    #     content=welcome_message, 
+    #     additional_kwargs={'timestamp': datetime.datetime.now().isoformat()}
+    # ))
   
 # Display chat messages from history on app rerun
 for message in st.session_state.messages:
@@ -282,7 +287,10 @@ for message in st.session_state.messages:
 if prompt := st.chat_input("What is up?"):
     # Add user message to chat history
     st.session_state.messages.append({"role":"user", "content":prompt})
-    #db_history.add_user_message(prompt)
+    # db_history.add_message(HumanMessage(
+    #     content=prompt,
+    #     additional_kwargs={'timestamp': datetime.datetime.now().isoformat()}
+    # )
     # Display user message in chat message container
     with st.chat_message("user"):
         st.markdown(prompt)
@@ -301,7 +309,10 @@ if prompt := st.chat_input("What is up?"):
         # Replace the "thinking" animation with the chatbot's response
         message_placeholder.markdown(response)
         st.session_state.messages.append({"role": "assistant", "content": response})
-        #db_history.add_ai_message(response)
+        # db_history.add_message(AIMessage(
+        #     content=response, 
+        #     additional_kwargs={'timestamp': datetime.datetime.now().isoformat()}
+        # ))
 
 
 
