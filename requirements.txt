@@ -1,11 +1,8 @@
 langchain
 openai
 streamlit
-pdfplumber
-pinecone-client
 tiktoken
 python-dotenv
 psycopg
 psycopg2-binary
-pgvector
 rsconnect-python
