@@ -15,6 +15,7 @@ from langchain.prompts import (
     MessagesPlaceholder,
     SystemMessagePromptTemplate,
 )
+from langchain_core.messages import SystemMessage
 
 # Load environment variables from .env if it exists.
 from dotenv import load_dotenv
@@ -53,31 +54,25 @@ models = [
 session_id = get_session_id()
 
 # Create template for system message to provide direction for the agent
-role_description = """Your name is Sigma and your goal is to converse with me to get my answers to the following self-motivational belief questions:
+system_message = """Your name is Sigma and your goal is to converse with me to get my answers to the following self-motivational belief questions:
 1) Why do you think you will be good at a career in food, nutrition, health and/or wellness?
 2) What do you hope to get out of stating your personal and professional goals in your Assessment of Personal Goals and Values (Assignment 1 and 7)?
 3) What makes you want to invest time in formulating personal and professional goals in this class?
 4) How will your personal desire to succeed influence your effort input on Assessment of Personal Goals and Values?
-"""
 
-context = """Context:
+Context:
 I am an undergraduate student in the 7 week course 'NSC 396A - Survey of Careers in Nutrition' at the University of Arizona.
-"""
 
-rules = """Rules:
+Rules:
 - Never answer questions for me
 - Keep the conversation on task
 - For each task analysis question, always follow-up my first response with one open-ended question
 """
 
-system_message = role_description + context + rules
-
 # Prompt
 prompt = ChatPromptTemplate(
     messages=[
-        SystemMessagePromptTemplate.from_template(
-            "You are a nice chatbot having a conversation with a human."
-        ),
+        SystemMessage(content=system_message),
         # The `variable_name` here is what must align with memory
         MessagesPlaceholder(variable_name="chat_history"),
         HumanMessagePromptTemplate.from_template("{input}"),
@@ -98,7 +93,7 @@ conversational_memory = ConversationBufferMemory(
     ai_prefix="AI Assistant",
 )
 
-conversation = LLMChain(llm=llm, prompt=prompt, verbose=True, memory=conversational_memory)
+conversation = LLMChain(llm=llm, prompt=prompt,memory=conversational_memory)
 
 # Add a callback to count the number of tokens used for each response.
 # This callback is not necessary for the agent to function, but it is useful for tracking token usage.
