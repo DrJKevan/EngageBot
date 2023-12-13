@@ -93,7 +93,7 @@ conversational_memory = ConversationBufferMemory(
     ai_prefix="AI Assistant",
 )
 
-conversation = LLMChain(llm=llm, prompt=prompt,memory=conversational_memory)
+conversation = LLMChain(llm=llm, prompt=prompt, verbose=True, memory=conversational_memory)
 
 # Add a callback to count the number of tokens used for each response.
 # This callback is not necessary for the agent to function, but it is useful for tracking token usage.
