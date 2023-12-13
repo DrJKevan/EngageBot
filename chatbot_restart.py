@@ -1,10 +1,5 @@
 import os
 import streamlit as st
-import psycopg2
-import datetime
-
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.chains import LLMChain
 from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
@@ -12,16 +7,18 @@ from langchain.memory.chat_message_histories import StreamlitChatMessageHistory
 from langchain.memory import PostgresChatMessageHistory
 from langchain.agents import AgentExecutor
 from langchain.callbacks import get_openai_callback
-from langchain.tools import BaseTool, Tool
-from langchain.vectorstores.pgvector import PGVector
-from langchain.schema.messages import HumanMessage, AIMessage
 from streamlit.runtime.scriptrunner import get_script_run_ctx
+from langchain.agents.conversational_chat.base import ConversationalChatAgent
+from langchain.prompts import (
+    ChatPromptTemplate,
+    HumanMessagePromptTemplate,
+    MessagesPlaceholder,
+    SystemMessagePromptTemplate,
+)
 
 # Load environment variables from .env if it exists.
 from dotenv import load_dotenv
 load_dotenv()
-
-#os.environ['LANGCHAIN_PROJECT']="MED810_p2"  # if not specified, defaults to "default"
 
 # Get session info so we can uniquely identify sessions in chat history table.
 def get_session_id() -> str:
@@ -46,23 +43,48 @@ connection_string="postgresql://{pg_user}:{pg_pass}@{pg_host}/{pg_db}".format(
 #   session_id=get_session_id() # Unique UUID for each session.
 # )
 
-
 # Define available OpenAI models.
 models = [
-    "gpt-3.5-turbo", 
-    "gpt-3.5-turbo-0301", 
     "gpt-3.5-turbo-0613", 
-    "gpt-3.5-turbo-16k", 
     "gpt-3.5-turbo-16k-0613", 
-    "gpt-4", 
-    "gpt-4-0314", 
     "gpt-4-0613",
 ]
 
 session_id = get_session_id()
 
+# Create template for system message to provide direction for the agent
+role_description = """Your name is Sigma and your goal is to converse with me to get my answers to the following self-motivational belief questions:
+1) Why do you think you will be good at a career in food, nutrition, health and/or wellness?
+2) What do you hope to get out of stating your personal and professional goals in your Assessment of Personal Goals and Values (Assignment 1 and 7)?
+3) What makes you want to invest time in formulating personal and professional goals in this class?
+4) How will your personal desire to succeed influence your effort input on Assessment of Personal Goals and Values?
+"""
+
+context = """Context:
+I am an undergraduate student in the 7 week course 'NSC 396A - Survey of Careers in Nutrition' at the University of Arizona.
+"""
+
+rules = """Rules:
+- Never answer questions for me
+- Keep the conversation on task
+- For each task analysis question, always follow-up my first response with one open-ended question
+"""
+
+system_message = role_description + context + rules
+
+# Prompt
+prompt = ChatPromptTemplate(
+    messages=[
+        SystemMessagePromptTemplate.from_template(
+            "You are a nice chatbot having a conversation with a human."
+        ),
+        # The `variable_name` here is what must align with memory
+        MessagesPlaceholder(variable_name="chat_history"),
+        HumanMessagePromptTemplate.from_template("{input}"),
+    ]
+)
 # Initialize the OpenAI Class
-llm = ChatOpenAI(temperature=0, model=models[4], tags=[session_id])
+llm = ChatOpenAI(temperature=0, model=models[2])
 
 # Optionally, specify your own session_state key for storing messages
 msgs = StreamlitChatMessageHistory(key="special_app_key")
@@ -76,28 +98,7 @@ conversational_memory = ConversationBufferMemory(
     ai_prefix="AI Assistant",
 )
 
-
-
-
-# Create template for system message to provide direction for the agent
-role_description = """Your name is Sigma and your goal is to converse with me to get my answers to the following task analysis questions:
-1) What percent correct would you like to achieve on the final clinical reasoning case and why?
-2) How would you like to prepare your clinical reasoning skills for the final clinical case?
-3) When will you start doing each of your preparation tasks?
-"""
-
-context = """Context:
-I am a medical student in a clinical reasoning course at the University of Arizona.
-"""
-
-rules = """Rules:
-- Never answer questions for me
-- Keep the conversation on task
-- For each task analysis question, always follow-up my first response with one open-ended question
-"""
-
-system_message = role_description + context + rules
-
+conversation = LLMChain(llm=llm, prompt=prompt, verbose=True, memory=conversational_memory)
 
 # Add a callback to count the number of tokens used for each response.
 # This callback is not necessary for the agent to function, but it is useful for tracking token usage.
@@ -170,9 +171,10 @@ if "openai_model" not in st.session_state:
 # Initialize chat history
 if "messages" not in st.session_state:
     welcome_message = """Hello! My name is Sigma and I am here to help you think through the following questions:
-1) What percent correct would you like to achieve on the final clinical reasoning case and why?
-2) How would you like to prepare your clinical reasoning skills for the final clinical case?
-3) When will you start doing each of your preparation tasks?
+1) Why do you think you will be good at a career in food, nutrition, health and/or wellness?
+2) What do you hope to get out of stating your personal and professional goals in your Assessment of Personal Goals and Values (Assignment 1 and 7)?
+3) What makes you want to invest time in formulating personal and professional goals in this class?
+4) How will your personal desire to succeed influence your effort input on Assessment of Personal Goals and Values?
 
 Let's talk about them one at a time when you're ready.
 """
@@ -208,7 +210,8 @@ if prompt := st.chat_input("What is up?"):
         # Get the response from the chatbot
         #response = executor.run(prompt)
         #print(conversational_memory.buffer_as_messages) - Uncomment to see message log
-        response = run_query_and_count_tokens(executor, prompt)
+        response = run_query_and_count_tokens(conversation, prompt)
+        #response = conversation.run(prompt)
 
         # Replace the "thinking" animation with the chatbot's response
         message_placeholder.markdown(response)
@@ -217,3 +220,4 @@ if prompt := st.chat_input("What is up?"):
         #     content=response, 
         #     additional_kwargs={'timestamp': datetime.datetime.now().isoformat()}
         # ))
+

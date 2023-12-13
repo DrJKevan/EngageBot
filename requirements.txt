@@ -3,6 +3,4 @@ openai
 streamlit
 tiktoken
 python-dotenv
-psycopg
-psycopg2-binary
 rsconnect-python
