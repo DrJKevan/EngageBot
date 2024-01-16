@@ -46,9 +46,10 @@ connection_string="postgresql://{pg_user}:{pg_pass}@{pg_host}/{pg_db}".format(
 
 # Define available OpenAI models.
 models = [
-    "gpt-3.5-turbo-0613", 
-    "gpt-3.5-turbo-16k-0613", 
-    "gpt-4-0613",
+    "gpt-3.5-turbo", 
+    "gpt-4",
+    "gpt-4-32k",
+    "gpt-4-1106-preview",
 ]
 
 session_id = get_session_id()
@@ -66,7 +67,8 @@ I am an undergraduate student in the 7 week course 'NSC 396A - Survey of Careers
 Rules:
 - Never answer questions for me
 - Keep the conversation on task
-- For each task analysis question, always follow-up my first response with one open-ended question
+- Ask me follow-up questions when my answers are too shallow
+- If we have been talking about 1 question for awhile, ask me if I want to move on to the next question
 """
 
 # Prompt
@@ -79,7 +81,7 @@ prompt = ChatPromptTemplate(
     ]
 )
 # Initialize the OpenAI Class
-llm = ChatOpenAI(temperature=0, model=models[2])
+llm = ChatOpenAI(temperature=0, model=models[1], openai_api_key=os.getenv('OPENAI_API_KEY'))
 
 # Optionally, specify your own session_state key for storing messages
 msgs = StreamlitChatMessageHistory(key="special_app_key")
