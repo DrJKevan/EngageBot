@@ -1,13 +1,10 @@
 import os
 import streamlit as st
 from langchain.chains import LLMChain
-#from langchain_community.chat_models import ChatOpenAI
 from langchain_openai import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
 from langchain_community.chat_message_histories import StreamlitChatMessageHistory
 from langchain.memory import PostgresChatMessageHistory
-from langchain.agents import AgentExecutor
-from langchain_community.callbacks import get_openai_callback
 from streamlit.runtime.scriptrunner import get_script_run_ctx
 from langchain.agents.conversational_chat.base import ConversationalChatAgent
 from langchain.prompts import (
@@ -20,7 +17,6 @@ from langchain_core.messages import SystemMessage
 
 from langchain_community.llms import Ollama
 ollama = Ollama(base_url='http://localhost:11434', model="mistral")
-#print(ollama("Is this working?"))
 
 # Load environment variables from .env if it exists.
 from dotenv import load_dotenv
@@ -48,14 +44,6 @@ connection_string="postgresql://{pg_user}:{pg_pass}@{pg_host}/{pg_db}".format(
 #   connection_string=connection_string,
 #   session_id=get_session_id() # Unique UUID for each session.
 # )
-
-# Define available OpenAI models.
-models = [
-    "gpt-3.5-turbo", 
-    "gpt-4",
-    "gpt-4-32k",
-    "gpt-4-1106-preview",
-]
 
 session_id = get_session_id()
 
@@ -85,8 +73,6 @@ prompt = ChatPromptTemplate(
         HumanMessagePromptTemplate.from_template("{input}"),
     ]
 )
-# Initialize the OpenAI Class
-llm = ChatOpenAI(temperature=0, model=models[1], openai_api_key=os.getenv('OPENAI_API_KEY'))
 
 # Optionally, specify your own session_state key for storing messages
 msgs = StreamlitChatMessageHistory(key="special_app_key")
@@ -97,21 +83,10 @@ conversational_memory = ConversationBufferMemory(
     chat_memory = msgs,
     input_key="input",
     return_messages = True,
-    ai_prefix="AI Assistant",
+    #ai_prefix="AI Assistant",
 )
 
 conversation = LLMChain(llm=ollama, prompt=prompt, verbose=True, memory=conversational_memory)
-
-# Add a callback to count the number of tokens used for each response.
-# This callback is not necessary for the agent to function, but it is useful for tracking token usage.
-def run_query_and_count_tokens(chain, query):
-    with get_openai_callback() as cb:
-        print('query \n')
-        print(query)
-        print('query end \n')
-        result = chain.invoke(query)
-        print(cb)
-    return result['text']
 
 # Streamlit Code
 st.set_page_config(page_title="Sigma - Learning Mentor", page_icon=":robot:")
@@ -210,14 +185,18 @@ if prompt := st.chat_input("What is up?"):
         message_placeholder.markdown('<div class="typing-animation"></div>', unsafe_allow_html=True) # Simple 3 dots "thinking" animation
         
         # Get the response from the chatbot
-        #response = executor.run(prompt)
-        #print(conversational_memory.buffer_as_messages) - Uncomment to see message log
-        response = run_query_and_count_tokens(conversation, prompt)
-        #response = conversation.run(prompt)
+        response = conversation.invoke(prompt)
 
         # Replace the "thinking" animation with the chatbot's response
-        message_placeholder.markdown(response)
-        st.session_state.messages.append({"role": "assistant", "content": response})
+        message_placeholder.markdown(response['text'])
+        st.session_state.messages.append({"role": "assistant", "content": response['text']})
+        print('conversational memory buffer - begin')
+        print(conversational_memory.buffer_as_messages)
+        print('conversational memory buffer - end')
+        
+        print('st session state')
+        print(st.session_state.messages)
+        print('st session state end')
         # db_history.add_message(AIMessage(
         #     content=response, 
         #     additional_kwargs={'timestamp': datetime.datetime.now().isoformat()}
