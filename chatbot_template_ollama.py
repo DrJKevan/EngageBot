@@ -20,7 +20,7 @@ from langchain_core.messages import SystemMessage
 
 from langchain_community.llms import Ollama
 ollama = Ollama(base_url='http://localhost:11434', model="mistral")
-print(ollama("Is this working?"))
+#print(ollama("Is this working?"))
 
 # Load environment variables from .env if it exists.
 from dotenv import load_dotenv
@@ -100,7 +100,7 @@ conversational_memory = ConversationBufferMemory(
     ai_prefix="AI Assistant",
 )
 
-conversation = LLMChain(llm=llm, prompt=prompt, verbose=True, memory=conversational_memory)
+conversation = LLMChain(llm=ollama, prompt=prompt, verbose=True, memory=conversational_memory)
 
 # Add a callback to count the number of tokens used for each response.
 # This callback is not necessary for the agent to function, but it is useful for tracking token usage.
