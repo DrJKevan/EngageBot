@@ -1,6 +1,9 @@
 langchain
+langchain-core
+langchain-community
 openai
 streamlit
 tiktoken
 python-dotenv
 rsconnect-python
+
