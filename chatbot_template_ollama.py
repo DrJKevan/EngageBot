@@ -18,6 +18,10 @@ from langchain.prompts import (
 )
 from langchain_core.messages import SystemMessage
 
+from langchain_community.llms import Ollama
+ollama = Ollama(base_url='http://localhost:11434', model="mistral")
+print(ollama("Is this working?"))
+
 # Load environment variables from .env if it exists.
 from dotenv import load_dotenv
 load_dotenv()
@@ -107,7 +111,7 @@ def run_query_and_count_tokens(chain, query):
         print('query end \n')
         result = chain.invoke(query)
         print(cb)
-    return result
+    return result['text']
 
 # Streamlit Code
 st.set_page_config(page_title="Sigma - Learning Mentor", page_icon=":robot:")
