@@ -18,10 +18,6 @@ from langchain.prompts import (
 )
 from langchain_core.messages import SystemMessage
 
-from langchain.llms import Ollama
-ollama = Ollama(base_url='http://localhost:11434', model="mistral")
-print(ollama("Is this working?"))
-
 # Load environment variables from .env if it exists.
 from dotenv import load_dotenv
 load_dotenv()
@@ -85,7 +81,6 @@ prompt = ChatPromptTemplate(
         HumanMessagePromptTemplate.from_template("{input}"),
     ]
 )
-
 # Initialize the OpenAI Class
 llm = ChatOpenAI(temperature=0, model=models[1], openai_api_key=os.getenv('OPENAI_API_KEY'))
 
@@ -110,7 +105,7 @@ def run_query_and_count_tokens(chain, query):
         print('query \n')
         print(query)
         print('query end \n')
-        result = chain.run(query)
+        result = chain.invoke(query)
         print(cb)
     return result
 

@@ -105,7 +105,7 @@ def run_query_and_count_tokens(chain, query):
         print('query \n')
         print(query)
         print('query end \n')
-        result = chain.run(query)
+        result = chain.invoke(query)
         print(cb)
     return result
 
