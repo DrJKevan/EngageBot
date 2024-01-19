@@ -1,7 +1,6 @@
 import os
 import streamlit as st
 from langchain.chains import LLMChain
-from langchain_openai import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
 from langchain_community.chat_message_histories import StreamlitChatMessageHistory
 from langchain.memory import PostgresChatMessageHistory
