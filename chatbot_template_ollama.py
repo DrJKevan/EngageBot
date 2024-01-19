@@ -14,10 +14,17 @@ from langchain_core.prompts import (
 )
 from langchain_core.messages import SystemMessage
 
+from langchain.callbacks.base import BaseCallbackHandler
+class StreamHandler(BaseCallbackHandler):
+    def __init__(self, container, initial_text=""):
+        self.container = container
+        self.text = initial_text
+    def on_llm_new_token(self, token: str, **kwargs) -> None:
+        self.text += token
+        self.container.markdown(self.text)
+
 #from langchain_community.llms import Ollama
-#ollama = Ollama(base_url='http://localhost:11434', model="mistral")
 from langchain_community.chat_models import ChatOllama
-ollama = ChatOllama(base_url='http://localhost:11434', model="mistral")
 
 # Load environment variables from .env if it exists.
 from dotenv import load_dotenv
@@ -66,7 +73,7 @@ Rules:
 """
 
 # Prompt
-prompt = ChatPromptTemplate(
+prompt_template = ChatPromptTemplate(
     messages=[
         SystemMessage(content=system_message),
         # The `variable_name` here is what must align with memory
@@ -86,8 +93,6 @@ conversational_memory = ConversationBufferMemory(
     return_messages = True,
     #ai_prefix="AI Assistant",
 )
-
-conversation = LLMChain(llm=ollama, prompt=prompt, verbose=True, memory=conversational_memory)
 
 # Streamlit Code
 st.set_page_config(page_title="Sigma - Learning Mentor", page_icon=":robot:")
@@ -185,6 +190,12 @@ if prompt := st.chat_input("What is up?"):
         message_placeholder = st.empty()
         message_placeholder.markdown('<div class="typing-animation"></div>', unsafe_allow_html=True) # Simple 3 dots "thinking" animation
         
+        #ollama = Ollama(base_url='http://localhost:11434', model="mistral")
+        stream_handler = StreamHandler(message_placeholder)
+        ollama = ChatOllama(base_url='http://localhost:11434', model="mistral", streaming=True, callbacks=[stream_handler])
+
+        conversation = LLMChain(llm=ollama, prompt=prompt_template, verbose=True, memory=conversational_memory)
+
         # Get the response from the chatbot
         response = conversation.invoke(prompt)
 
