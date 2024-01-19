@@ -1,12 +1,12 @@
 import os
 import streamlit as st
-from langchain.chains import LLMChain
-from langchain.memory import ConversationBufferMemory
+from langchain.chains.llm import LLMChain
+from langchain.memory.buffer import ConversationBufferMemory
 from langchain_community.chat_message_histories import StreamlitChatMessageHistory
 from langchain.memory import PostgresChatMessageHistory
 from streamlit.runtime.scriptrunner import get_script_run_ctx
 from langchain.agents.conversational_chat.base import ConversationalChatAgent
-from langchain.prompts import (
+from langchain_core.prompts import (
     ChatPromptTemplate,
     HumanMessagePromptTemplate,
     MessagesPlaceholder,
