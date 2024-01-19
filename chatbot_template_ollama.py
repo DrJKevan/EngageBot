@@ -14,8 +14,10 @@ from langchain.prompts import (
 )
 from langchain_core.messages import SystemMessage
 
-from langchain_community.llms import Ollama
-ollama = Ollama(base_url='http://localhost:11434', model="mistral")
+#from langchain_community.llms import Ollama
+#ollama = Ollama(base_url='http://localhost:11434', model="mistral")
+from langchain_community.chat_models import ChatOllama
+ollama = ChatOllama(base_url='http://localhost:11434', model="mistral")
 
 # Load environment variables from .env if it exists.
 from dotenv import load_dotenv
