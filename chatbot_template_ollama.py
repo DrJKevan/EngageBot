@@ -1,6 +1,7 @@
 import os
 import streamlit as st
 from langchain.chains.llm import LLMChain
+from langchain.chains import ConversationChain
 from langchain.memory.buffer import ConversationBufferMemory
 from langchain_community.chat_message_histories import StreamlitChatMessageHistory
 from langchain.memory import PostgresChatMessageHistory
@@ -63,13 +64,16 @@ system_message = """Your name is Sigma and your goal is to converse with me to g
 4) How will your personal desire to succeed influence your effort input on Assessment of Personal Goals and Values?
 
 Context:
-I am an undergraduate student in the 7 week course 'NSC 396A - Survey of Careers in Nutrition' at the University of Arizona.
+I am a student in the 7 week course 'NSC 396A - Survey of Careers in Nutrition' at the University of Arizona.
 
 Rules:
-- Never answer questions for me
-- Keep the conversation on task
-- Ask me follow-up questions when my answers are too shallow
-- If we have been talking about 1 question for awhile, ask me if I want to move on to the next question
+- Never answer questions for me.
+- Keep the conversation on task.
+- Discuss one question at a time.
+- Do not go back to a previously answered question unless I ask us to. 
+- Do not give me suggestions on how to answer unless I ask for them.
+- Ask me follow-up questions when my answers are too shallow.
+- If we have been talking about 1 question for awhile, ask me if I want to move on to the next question.
 """
 
 # Prompt
@@ -91,7 +95,8 @@ conversational_memory = ConversationBufferMemory(
     chat_memory = msgs,
     input_key="input",
     return_messages = True,
-    #ai_prefix="AI Assistant",
+    ai_prefix="AI",
+    human_prefix="Human",
 )
 
 # Streamlit Code
@@ -190,25 +195,19 @@ if prompt := st.chat_input("What is up?"):
         message_placeholder = st.empty()
         message_placeholder.markdown('<div class="typing-animation"></div>', unsafe_allow_html=True) # Simple 3 dots "thinking" animation
         
-        #ollama = Ollama(base_url='http://localhost:11434', model="mistral")
         stream_handler = StreamHandler(message_placeholder)
-        ollama = ChatOllama(base_url='http://localhost:11434', model="mistral", streaming=True, callbacks=[stream_handler])
+        ollama = ChatOllama(base_url='http://localhost:11434', model="mistral", streaming=True, callbacks=[stream_handler], system=system_message,)
 
-        conversation = LLMChain(llm=ollama, prompt=prompt_template, verbose=True, memory=conversational_memory)
+        conversation = ConversationChain(llm=ollama, prompt=prompt_template, verbose=True, memory=conversational_memory, input_key="input",)
 
         # Get the response from the chatbot
         response = conversation.invoke(prompt)
+        print(response)
 
         # Replace the "thinking" animation with the chatbot's response
-        message_placeholder.markdown(response['text'])
-        st.session_state.messages.append({"role": "assistant", "content": response['text']})
-        print('conversational memory buffer - begin')
-        print(conversational_memory.buffer_as_messages)
-        print('conversational memory buffer - end')
-        
-        print('st session state')
-        print(st.session_state.messages)
-        print('st session state end')
+        message_placeholder.markdown(response['response'])
+        st.session_state.messages.append({"role": "assistant", "content": response['response']})
+
         # db_history.add_message(AIMessage(
         #     content=response, 
         #     additional_kwargs={'timestamp': datetime.datetime.now().isoformat()}
