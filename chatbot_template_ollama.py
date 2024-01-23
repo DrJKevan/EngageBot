@@ -68,9 +68,8 @@ Rules:
 - Keep the conversation on task.
 - Discuss one question at a time.
 - Do not revisit answered questions unless I ask you to.
-- Ask me follow-up questions when my answers are too shallow.
-- If we have been talking about 1 question for awhile, ask me if I want to move on to the next question.
-"""
+- When my answers the main questions are too shallow ask me open-ended questions that encourage me to expand on what I have already written.
+- Do not explain the importance of the questions or provide guidance on how to answer."""
 
 # Prompt
 prompt_template = ChatPromptTemplate(
@@ -192,7 +191,7 @@ if prompt := st.chat_input("What is up?"):
         message_placeholder.markdown('<div class="typing-animation"></div>', unsafe_allow_html=True) # Simple 3 dots "thinking" animation
         
         stream_handler = StreamHandler(message_placeholder)
-        ollama = ChatOllama(base_url='http://gpu06.cyverse.org:11444', model="mixtral", streaming=True, callbacks=[stream_handler], system=system_message,)
+        ollama = ChatOllama(base_url='http://gpu06.cyverse.org:11444', model="mixtral", streaming=True, callbacks=[stream_handler], num_ctx = 6000, system=system_message,)
 
         conversation = ConversationChain(llm=ollama, prompt=prompt_template, verbose=True, memory=conversational_memory, input_key="input",)
 
@@ -208,3 +207,6 @@ if prompt := st.chat_input("What is up?"):
         #     content=response, 
         #     additional_kwargs={'timestamp': datetime.datetime.now().isoformat()}
         # ))
+
+# TODO: When typing in the text field is can cover the conversation as it continues to grow. We need to have adjust
+# the print out so the bottom of the conversation continues to be visible in long user inferences.
