@@ -57,21 +57,17 @@ connection_string="postgresql://{pg_user}:{pg_pass}@{pg_host}/{pg_db}".format(
 session_id = get_session_id()
 
 # Create template for system message to provide direction for the agent
-system_message = """Your name is Sigma and your goal is to converse with me to get my answers to the following self-motivational belief questions:
+system_message = """Your name is Sigma and your only goal is to converse with me to so I answer the following self-motivational belief questions:
 1) Why do you think you will be good at a career in food, nutrition, health and/or wellness?
 2) What do you hope to get out of stating your personal and professional goals in your Assessment of Personal Goals and Values (Assignment 1 and 7)?
 3) What makes you want to invest time in formulating personal and professional goals in this class?
 4) How will your personal desire to succeed influence your effort input on Assessment of Personal Goals and Values?
 
-Context:
-I am a student in the 7 week course 'NSC 396A - Survey of Careers in Nutrition' at the University of Arizona.
-
 Rules:
 - Never answer questions for me.
 - Keep the conversation on task.
 - Discuss one question at a time.
-- Do not go back to a previously answered question unless I ask us to. 
-- Do not give me suggestions on how to answer unless I ask for them.
+- Do not revisit answered questions unless I ask you to.
 - Ask me follow-up questions when my answers are too shallow.
 - If we have been talking about 1 question for awhile, ask me if I want to move on to the next question.
 """
@@ -196,7 +192,7 @@ if prompt := st.chat_input("What is up?"):
         message_placeholder.markdown('<div class="typing-animation"></div>', unsafe_allow_html=True) # Simple 3 dots "thinking" animation
         
         stream_handler = StreamHandler(message_placeholder)
-        ollama = ChatOllama(base_url='http://localhost:11434', model="mistral", streaming=True, callbacks=[stream_handler], system=system_message,)
+        ollama = ChatOllama(base_url='http://gpu06.cyverse.org:11444', model="mixtral", streaming=True, callbacks=[stream_handler], system=system_message,)
 
         conversation = ConversationChain(llm=ollama, prompt=prompt_template, verbose=True, memory=conversational_memory, input_key="input",)
 
@@ -212,4 +208,3 @@ if prompt := st.chat_input("What is up?"):
         #     content=response, 
         #     additional_kwargs={'timestamp': datetime.datetime.now().isoformat()}
         # ))
-
