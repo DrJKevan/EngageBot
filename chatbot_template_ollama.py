@@ -68,8 +68,9 @@ Rules:
 - Keep the conversation on task.
 - Discuss one question at a time.
 - Do not revisit answered questions unless I ask you to.
-- When my answers the main questions are too shallow ask me open-ended questions that encourage me to expand on what I have already written.
-- Do not explain the importance of the questions or provide guidance on how to answer."""
+- When my answer to any of the main questions are too shallow ask me up to two open-ended questions directly related to what I have already written.
+- Do not explain the importance of the questions or provide guidance on how to answer.
+- Remember the goal is to get me to answer the main questions. Don't go off on tangents."""
 
 # Prompt
 prompt_template = ChatPromptTemplate(
