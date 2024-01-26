@@ -11,7 +11,6 @@ from langchain_core.prompts import (
     ChatPromptTemplate,
     HumanMessagePromptTemplate,
     MessagesPlaceholder,
-    SystemMessagePromptTemplate,
 )
 from langchain_core.messages import SystemMessage
 
@@ -216,4 +215,4 @@ if prompt := st.chat_input("What is up?"):
 # TODO: Work on LTE 1.3 (LTI Advantage)
 # TODO: Give students access to chat transcripts
 # TODO: See if we can improve response time of Mixtral on GPU06
-        
+# TODO: Retest conversation storage
