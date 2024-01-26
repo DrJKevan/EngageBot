@@ -211,3 +211,9 @@ if prompt := st.chat_input("What is up?"):
 
 # TODO: When typing in the text field is can cover the conversation as it continues to grow. We need to have adjust
 # the print out so the bottom of the conversation continues to be visible in long user inferences.
+# TODO: Consider Guardrails
+# TODO: Add a thumbs up/down, perhaps a summary feedback text area?
+# TODO: Work on LTE 1.3 (LTI Advantage)
+# TODO: Give students access to chat transcripts
+# TODO: See if we can improve response time of Mixtral on GPU06
+        
