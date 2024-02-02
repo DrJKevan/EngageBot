@@ -73,7 +73,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "4) LTI Integration - Launch Server.md",
+                "file": "Open Questions.md",
                 "mode": "source",
                 "source": false
               }
@@ -146,7 +146,6 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "4) LTI Integration - Launch Server.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -163,7 +162,6 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "4) LTI Integration - Launch Server.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -186,7 +184,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "4) LTI Integration - Launch Server.md"
+                "file": "Ollama Test.md"
               }
             }
           }
@@ -207,12 +205,14 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "7ea325f45eb55799",
+  "active": "c111ec8f24c81a99",
   "lastOpenFiles": [
-    "3) LTI Integration - Overall Process.md",
     "Open Questions.md",
-    "5) LTI Integration - Chatbot.md",
+    "Ollama Test.md",
     "4) LTI Integration - Launch Server.md",
+    "Untitled",
+    "3) LTI Integration - Overall Process.md",
+    "5) LTI Integration - Chatbot.md",
     "2) LTI Integration - Tool Development Summary.md",
     "1) LTI Integration - Introduction.md"
   ]
