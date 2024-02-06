@@ -1,10 +1,11 @@
 import os
+from datetime import datetime
 import streamlit as st
 from langchain.chains.llm import LLMChain
 from langchain.chains import ConversationChain
 from langchain.memory.buffer import ConversationBufferMemory
 from langchain_community.chat_message_histories import StreamlitChatMessageHistory
-from langchain.memory import PostgresChatMessageHistory
+from langchain_community.chat_message_histories import PostgresChatMessageHistory
 from streamlit.runtime.scriptrunner import get_script_run_ctx
 from langchain.agents.conversational_chat.base import ConversationalChatAgent
 from langchain_core.prompts import (
@@ -13,6 +14,8 @@ from langchain_core.prompts import (
     MessagesPlaceholder,
 )
 from langchain_core.messages import SystemMessage
+from langchain_core.messages.ai import AIMessage
+from langchain_core.messages.human import HumanMessage
 
 from langchain.callbacks.base import BaseCallbackHandler
 class StreamHandler(BaseCallbackHandler):
@@ -25,6 +28,10 @@ class StreamHandler(BaseCallbackHandler):
 
 #from langchain_community.llms import Ollama
 from langchain_community.chat_models import ChatOllama
+
+# Specify which course and week this file is for.
+course = 'template_ollama'
+week = '1'
 
 # Load environment variables from .env if it exists.
 from dotenv import load_dotenv
@@ -48,10 +55,31 @@ connection_string="postgresql://{pg_user}:{pg_pass}@{pg_host}/{pg_db}".format(
     pg_db=os.getenv('PG_DB')
 )
 
-#db_history = PostgresChatMessageHistory(
-#   connection_string=connection_string,
-#   session_id=get_session_id() # Unique UUID for each session.
-# )
+db_history = PostgresChatMessageHistory(
+    connection_string=connection_string,
+    session_id=get_session_id() # Unique UUID for each session.
+)
+def add_human_history(message: str):
+    if 'db_history' in globals():
+        db_history.add_message(HumanMessage(
+            content=message, 
+            additional_kwargs={
+                'timestamp': datetime.now().isoformat(),
+                'course': course,
+                'week': week,
+            }
+        ))
+def add_ai_history(message: str):
+    if 'db_history' in globals():
+        db_history.add_message(AIMessage(
+            content=message, 
+            additional_kwargs={
+                'timestamp': datetime.now().isoformat(),
+                'course': course,
+                'week': week,
+            }
+        ))
+
 
 session_id = get_session_id()
 
@@ -162,10 +190,7 @@ if "messages" not in st.session_state:
 Let's talk about them one at a time when you're ready.
 """
     st.session_state.messages = [{"role": "assistant", "content": welcome_message}]
-    # db_history.add_message(AIMessage(
-    #     content=welcome_message, 
-    #     additional_kwargs={'timestamp': datetime.datetime.now().isoformat()}
-    # ))
+    add_ai_history(welcome_message)
   
 # Display chat messages from history on app rerun
 for message in st.session_state.messages:
@@ -176,10 +201,7 @@ for message in st.session_state.messages:
 if prompt := st.chat_input("What is up?"):
     # Add user message to chat history
     st.session_state.messages.append({"role":"user", "content":prompt})
-    # db_history.add_message(HumanMessage(
-    #     content=prompt,
-    #     additional_kwargs={'timestamp': datetime.datetime.now().isoformat()}
-    # )
+    add_human_history(prompt)
     # Display user message in chat message container
     with st.chat_message("user"):
         st.markdown(prompt)
@@ -203,10 +225,7 @@ if prompt := st.chat_input("What is up?"):
         message_placeholder.markdown(response['response'])
         st.session_state.messages.append({"role": "assistant", "content": response['response']})
 
-        # db_history.add_message(AIMessage(
-        #     content=response, 
-        #     additional_kwargs={'timestamp': datetime.datetime.now().isoformat()}
-        # ))
+        add_ai_history(response['response'])
 
 # TODO: When typing in the text field is can cover the conversation as it continues to grow. We need to have adjust
 # the print out so the bottom of the conversation continues to be visible in long user inferences.
