@@ -55,10 +55,10 @@ connection_string="postgresql://{pg_user}:{pg_pass}@{pg_host}/{pg_db}".format(
     pg_db=os.getenv('PG_DB')
 )
 
-db_history = PostgresChatMessageHistory(
-    connection_string=connection_string,
-    session_id=get_session_id() # Unique UUID for each session.
-)
+#db_history = PostgresChatMessageHistory(
+#    connection_string=connection_string,
+#    session_id=get_session_id() # Unique UUID for each session.
+#)
 def add_human_history(message: str):
     if 'db_history' in globals():
         db_history.add_message(HumanMessage(
