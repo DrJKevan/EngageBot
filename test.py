@@ -19,6 +19,15 @@ st.title("Sigma - Learning Mentor")
 if "messages" not in st.session_state:
     st.session_state["messages"] = []
 
+# Add initial message
+    st.session_state.messages.append({"role":"assistant", "content": """Hello! My name is Sigma and I am here to help you think through the following questions:
+1) Why do you think you will be good at a career in food, nutrition, health and/or wellness?
+2) What do you hope to get out of stating your personal and professional goals in your Assessment of Personal Goals and Values (Assignment 1 and 7)?
+3) What makes you want to invest time in formulating personal and professional goals in this class?
+4) How will your personal desire to succeed influence your effort input on Assessment of Personal Goals and Values?
+
+Let's talk about them one at a time when you're ready."""})
+
 def model_res_generator():
     stream = ollama.chat(
         model="llama2:latest",
