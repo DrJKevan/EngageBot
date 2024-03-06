@@ -4,55 +4,16 @@ import streamlit as st
 # Streamlit Code
 st.set_page_config(page_title="Sigma - Learning Mentor", page_icon=":robot:")
 
-# Use consistent styling and layout
-background_color = "#f4f4f6"
-font_color = "#333"
+# Function to read CSS file and return its content
+def load_css(css_file):
+    with open(css_file, "r") as f:
+        return f.read()
 
-st.markdown(
-    f"""
-    <style>
-        body {{
-            background-color: {background_color};
-            color: {font_color};
-        }}
-    @keyframes typing {{
-        0% {{ content: '.'; }}
-        25% {{ content: '..'; }}
-        50% {{ content: '...'; }}
-        75% {{ content: '..'; }}
-        100% {{ content: '.'; }}
-    }}
-
-    .typing-animation::before {{
-        content: '...';
-        animation: typing 1s steps(5, end) infinite;
-    }}
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
+# Load CSS styling
+css_content = load_css("style.css")
+st.markdown(f'<style>{css_content}</style>', unsafe_allow_html=True)
 
 st.title("Sigma - Learning Mentor")
-
-# Chat Window Styling
-chat_window_style = """
-    border-radius: 10px;
-    border: 1px solid #ddd;
-    background-color: #fff;
-    padding: 10px;
-    height: 400px;
-    overflow-y: auto;
-    font-size: 16px;
-    font-family: Arial, sans-serif;
-"""
-
-response_style = """
-    border-radius: 5px;
-    background-color: #e1f3fd;
-    padding: 10px;
-    margin: 10px 0;
-    display: inline-block;
-"""
 
 # initialize history
 if "messages" not in st.session_state:
@@ -70,14 +31,14 @@ def model_res_generator():
 # Display chat messages from history on app rerun
 for message in st.session_state["messages"]:
     with st.chat_message(message["role"]):
-        st.markdown(message["content"])
+        st.markdown(message["content"], unsafe_allow_html=True)
 
 if prompt := st.chat_input("What is up?"):
     # add latest message to history in format {role, content}
     st.session_state["messages"].append({"role": "user", "content": prompt})
 
     with st.chat_message("user"):
-        st.markdown(prompt)
+        st.markdown(prompt, unsafe_allow_html=True)
 
     with st.chat_message("assistant"):
         message = st.write_stream(model_res_generator())
