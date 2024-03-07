@@ -1,6 +1,61 @@
+import os
 import ollama
 from ollama import Client
 import streamlit as st
+from datetime import datetime
+
+# Specify which course and week this file is for.
+course = 'template_ollama'
+week = '1'
+
+# Load environment variables from .env if it exists.
+from dotenv import load_dotenv
+load_dotenv()
+
+# Get session info so we can uniquely identify sessions in chat history table.
+def get_session_id() -> str:
+    try:
+        ctx = get_script_run_ctx()
+        if ctx is None:
+            return None
+    except Exception as e:
+        return None
+    return ctx.session_id
+
+# Initialize connection string for PostgreSQL storage
+connection_string="postgresql://{pg_user}:{pg_pass}@{pg_host}/{pg_db}".format(
+    pg_user=os.getenv('PG_USER'),
+    pg_pass=os.getenv('PG_PASS'),
+    pg_host=os.getenv('PG_HOST'),
+    pg_db=os.getenv('PG_DB')
+)
+
+#db_history = PostgresChatMessageHistory(
+#    connection_string=connection_string,
+#    session_id=get_session_id() # Unique UUID for each session.
+#)
+def add_human_history(message: str):
+    if 'db_history' in globals():
+        db_history.add_message(HumanMessage(
+            content=message, 
+            additional_kwargs={
+                'timestamp': datetime.now().isoformat(),
+                'course': course,
+                'week': week,
+            }
+        ))
+def add_ai_history(message: str):
+    if 'db_history' in globals():
+        db_history.add_message(AIMessage(
+            content=message, 
+            additional_kwargs={
+                'timestamp': datetime.now().isoformat(),
+                'course': course,
+                'week': week,
+            }
+        ))
+
+session_id = get_session_id()
 
 # Streamlit Code
 st.set_page_config(page_title="Sigma - Learning Mentor", page_icon=":robot:")
@@ -47,6 +102,7 @@ if "messages" not in st.session_state:
 4) How will your personal desire to succeed influence your effort input on Assessment of Personal Goals and Values?
 
 Let's talk about them one at a time when you're ready."""})
+add_ai_history(system_message)
 
 # Configure client for inference
 client = Client(host='http://gpu06.cyverse.org:11444')
@@ -68,6 +124,7 @@ for message in st.session_state["messages"][1:]: # Start from the second message
 if prompt := st.chat_input("What is up?"):
     # add latest message to history in format {role, content}
     st.session_state["messages"].append({"role": "user", "content": prompt})
+    add_human_history(prompt)
 
     with st.chat_message("user"):
         st.markdown(prompt, unsafe_allow_html=True)
@@ -75,3 +132,4 @@ if prompt := st.chat_input("What is up?"):
     with st.chat_message("assistant"):
         message = st.write_stream(model_res_generator())
         st.session_state["messages"].append({"role": "assistant", "content": message})
+         add_ai_history(message)
