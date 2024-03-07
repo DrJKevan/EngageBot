@@ -19,7 +19,7 @@ st.title("Sigma - Learning Mentor")
 if "messages" not in st.session_state:
     st.session_state["messages"] = []
 
-# Add initial message
+# Add initial AI message for student instructions
     st.session_state.messages.append({"role":"assistant", "content": """Hello! My name is Sigma and I am here to help you think through the following questions:
 1) Why do you think you will be good at a career in food, nutrition, health and/or wellness?
 2) What do you hope to get out of stating your personal and professional goals in your Assessment of Personal Goals and Values (Assignment 1 and 7)?
@@ -32,6 +32,7 @@ def model_res_generator():
     stream = ollama.chat(
         model="llama2:latest",
         messages=st.session_state["messages"],
+        system = "Your name is Sigma. Speak only as a pirate.",
         stream=True,
     )
     for chunk in stream:
