@@ -1,4 +1,5 @@
 import ollama
+from ollama import Client
 import streamlit as st
 
 # Streamlit Code
@@ -47,8 +48,11 @@ if "messages" not in st.session_state:
 
 Let's talk about them one at a time when you're ready."""})
 
+# Configure client for inference
+client = Client(host='http://localhost:11434')
+
 def model_res_generator():
-    stream = ollama.chat(
+    stream = client.chat(
         model="llama2",
         messages=st.session_state["messages"],
         stream=True,
