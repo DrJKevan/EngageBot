@@ -49,7 +49,7 @@ if "messages" not in st.session_state:
 Let's talk about them one at a time when you're ready."""})
 
 # Configure client for inference
-client = Client(host='http://localhost:11434')
+client = Client(host='http://gpu06.cyverse.org:11444')
 
 def model_res_generator():
     stream = client.chat(
