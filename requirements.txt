@@ -6,4 +6,5 @@ streamlit
 tiktoken
 python-dotenv
 rsconnect-python
+ollama
 
