@@ -3,10 +3,14 @@ import ollama
 from ollama import Client
 import streamlit as st
 from datetime import datetime
+from langchain_community.chat_message_histories import PostgresChatMessageHistory
+from streamlit.runtime.scriptrunner import get_script_run_ctx
+from langchain_core.messages.ai import AIMessage
+from langchain_core.messages.human import HumanMessage
 
 # Specify which course and week this file is for.
 course = 'template_ollama'
-week = '1'
+week = '2'
 
 # Load environment variables from .env if it exists.
 from dotenv import load_dotenv
@@ -30,10 +34,10 @@ connection_string="postgresql://{pg_user}:{pg_pass}@{pg_host}/{pg_db}".format(
     pg_db=os.getenv('PG_DB')
 )
 
-#db_history = PostgresChatMessageHistory(
-#    connection_string=connection_string,
-#    session_id=get_session_id() # Unique UUID for each session.
-#)
+db_history = PostgresChatMessageHistory(
+    connection_string=connection_string,
+    session_id=get_session_id() # Unique UUID for each session.
+)
 def add_human_history(message: str):
     if 'db_history' in globals():
         db_history.add_message(HumanMessage(
@@ -132,4 +136,4 @@ if prompt := st.chat_input("What is up?"):
     with st.chat_message("assistant"):
         message = st.write_stream(model_res_generator())
         st.session_state["messages"].append({"role": "assistant", "content": message})
-         add_ai_history(message)
+    add_ai_history(message)
