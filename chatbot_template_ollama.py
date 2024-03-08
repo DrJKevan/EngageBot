@@ -109,7 +109,7 @@ Let's talk about them one at a time when you're ready."""})
 add_ai_history(system_message)
 
 # Configure client for inference
-client = Client(host='http://gpu06.cyverse.org:11444')
+client = Client(host='http://gpu07.cyverse.org:11444')
 
 def model_res_generator():
     stream = client.chat(
