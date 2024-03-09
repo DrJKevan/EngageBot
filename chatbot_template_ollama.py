@@ -1,3 +1,4 @@
+
 import os
 import ollama
 from ollama import Client
@@ -95,10 +96,10 @@ st.title("Sigma - Learning Mentor")
 if "messages" not in st.session_state:
     st.session_state["messages"] = []
 
-# Add system message
+    # Add system message
     st.session_state.messages.append({"role":"system", "content": system_message})
 
-# Add initial message
+    # Add initial message
     st.session_state.messages.append({"role":"assistant", "content": """Hello! My name is Sigma and I am here to help you think through the following questions:
 1) Why do you think you will be good at a career in food, nutrition, health and/or wellness?
 2) What do you hope to get out of stating your personal and professional goals in your Assessment of Personal Goals and Values (Assignment 1 and 7)?
@@ -106,7 +107,9 @@ if "messages" not in st.session_state:
 4) How will your personal desire to succeed influence your effort input on Assessment of Personal Goals and Values?
 
 Let's talk about them one at a time when you're ready."""})
-add_ai_history(system_message)
+
+    # Add the message to PostgreSQL
+    add_ai_history(system_message)
 
 # Configure client for inference
 client = Client(host='http://gpu07.cyverse.org:11444')
@@ -117,8 +120,34 @@ def model_res_generator():
         messages=st.session_state["messages"],
         stream=True,
     )
+
+    # Container to hold the LLM response
+    container = st.empty()
+
+    # Initially display the type animation until first token is received
+    container.markdown('<div class="typing-animation"></div>', unsafe_allow_html=True)
+
+    # Initialize variable to track if it's the first token
+    first_chunk_received = False
+
+    # Initialize message container
+    full_message = ""
+
     for chunk in stream:
-        yield chunk["message"]["content"]
+        # Check if the first chunk of data has been received.
+        if not first_chunk_received:
+            # Clear the typing animation only one when the first chunk is received.
+            container.empty()
+            first_chunk_received = True
+        
+        # Accumulate final message.
+        full_message += chunk["message"]["content"]
+
+        # Being streaming message
+        container.write(full_message)
+
+    #Return the full message
+    return full_message
 
 # Display chat messages from history on app rerun
 for message in st.session_state["messages"][1:]: # Start from the second message to exclude the system prompt
@@ -134,6 +163,14 @@ if prompt := st.chat_input("What is up?"):
         st.markdown(prompt, unsafe_allow_html=True)
 
     with st.chat_message("assistant"):
-        message = st.write_stream(model_res_generator())
-        st.session_state["messages"].append({"role": "assistant", "content": message})
-    add_ai_history(message)
+        message = ""
+        message = model_res_generator()
+
+        if message:
+            # Appen the full message to the chat history
+            st.session_state["messages"].append({"role": "assistant", "content": message})
+
+            # Store the message in PostgreSQL
+            add_ai_history(message)
+
+
