@@ -90,6 +90,15 @@ Rules:
 - Do not explain the importance of the questions or provide guidance on how to answer.
 - Remember the goal is to get me to answer the main questions. Don't go off on tangents."""
 
+# Define Initial Message
+initial_message = """Hello! My name is Sigma and I am here to help you think through the following questions:
+1) Why do you think you will be good at a career in food, nutrition, health and/or wellness?
+2) What do you hope to get out of stating your personal and professional goals in your Assessment of Personal Goals and Values (Assignment 1 and 7)?
+3) What makes you want to invest time in formulating personal and professional goals in this class?
+4) How will your personal desire to succeed influence your effort input on Assessment of Personal Goals and Values?
+
+Let's talk about them one at a time when you're ready."""
+
 st.title("Sigma - Learning Mentor")
 
 # initialize history
@@ -100,23 +109,18 @@ if "messages" not in st.session_state:
     st.session_state.messages.append({"role":"system", "content": system_message})
 
     # Add initial message
-    st.session_state.messages.append({"role":"assistant", "content": """Hello! My name is Sigma and I am here to help you think through the following questions:
-1) Why do you think you will be good at a career in food, nutrition, health and/or wellness?
-2) What do you hope to get out of stating your personal and professional goals in your Assessment of Personal Goals and Values (Assignment 1 and 7)?
-3) What makes you want to invest time in formulating personal and professional goals in this class?
-4) How will your personal desire to succeed influence your effort input on Assessment of Personal Goals and Values?
-
-Let's talk about them one at a time when you're ready."""})
+    st.session_state.messages.append({"role":"assistant", "content": initial_message})
 
     # Add the message to PostgreSQL
     add_ai_history(system_message)
+    add_ai_history(initial_message)
 
 # Configure client for inference
 client = Client(host='http://gpu07.cyverse.org:11444')
 
 def model_res_generator():
     stream = client.chat(
-        model="llama2",
+        model="mixtral",
         messages=st.session_state["messages"],
         stream=True,
     )
