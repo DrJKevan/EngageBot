@@ -59,6 +59,7 @@ def add_ai_history(message: str):
                 'timestamp': datetime.now().isoformat(),
                 'course': course,
                 'week': week,
+                'interaction': interaction,
             }
         ))
 
