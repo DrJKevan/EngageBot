@@ -229,7 +229,7 @@ cd ~/EngageBot
 
 streamlit run nsc396a/nsc396a_interaction1.py --server.port 8601 &
 streamlit run nsc396a/nsc396a_interaction2.py --server.port 8602 &
-#streamlit run nsc396a/nsc396a_interaction3.py --server.port 8603 &
+streamlit run nsc396a/nsc396a_interaction3.py --server.port 8603 &
 #streamlit run nsc396a/nsc396a_interaction4.py --server.port 8604 &
 #streamlit run nsc396a/nsc396a_interaction5.py --server.port 8605 &
 #streamlit run nsc396a/nsc396a_interaction6.py --server.port 8606 &
@@ -239,7 +239,7 @@ streamlit run nsc396a/nsc396a_interaction2.py --server.port 8602 &
 #streamlit run nsc396a/nsc396a_interaction10.py --server.port 8610 &
 streamlit run gist330/gist330_interaction1.py --server.port 8701 &
 streamlit run gist330/gist330_interaction2.py --server.port 8702 &
-#streamlit run gist330/gist330_interaction3.py --server.port 8703 &
+streamlit run gist330/gist330_interaction3.py --server.port 8703 &
 #streamlit run gist330/gist330_interaction4.py --server.port 8704 &
 #streamlit run gist330/gist330_interaction5.py --server.port 8705 &
 #streamlit run gist330/gist330_interaction6.py --server.port 8706 &
