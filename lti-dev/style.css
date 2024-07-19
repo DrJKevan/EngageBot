@@ -1,0 +1,37 @@
+body {
+    background-color: #f4f4f6;
+    color: #333;
+}
+
+@keyframes typing {
+    0% { content: '.'; }
+    25% { content: '..'; }
+    50% { content: '...'; }
+    75% { content: '..'; }
+    100% { content: '.'; }
+}
+
+.typing-animation::before {
+    content: '...';
+    animation: typing 1s steps(5, end) infinite;
+}
+
+/* Chat Window Styling */
+.chat-window {
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    background-color: #fff;
+    padding: 10px;
+    height: 400px;
+    overflow-y: auto;
+    font-size: 16px;
+    font-family: Arial, sans-serif;
+}
+
+.response {
+    border-radius: 5px;
+    background-color: #e1f3fd;
+    padding: 10px;
+    margin: 10px 0;
+    display: inline-block;
+}
