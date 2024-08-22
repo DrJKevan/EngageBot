@@ -35,10 +35,10 @@ connection_string="postgresql://{pg_user}:{pg_pass}@{pg_host}/{pg_db}".format(
     pg_db=os.getenv('PG_DB')
 )
 
-db_history = PostgresChatMessageHistory(
-    connection_string=connection_string,
-    session_id=get_session_id() # Unique UUID for each session.
-)
+#db_history = PostgresChatMessageHistory(
+#    connection_string=connection_string,
+#    session_id=get_session_id() # Unique UUID for each session.
+#)
 def add_human_history(message: str):
     if 'db_history' in globals():
         db_history.add_message(HumanMessage(
@@ -116,11 +116,11 @@ if "messages" not in st.session_state:
     add_ai_history(initial_message)
 
 # Configure client for inference
-client = Client(host='http://gpu07.cyverse.org:11444')
+client = Client(host='http://localhost:11434')
 
 def model_res_generator():
     stream = client.chat(
-        model="mixtral",
+        model="llama3.1",
         messages=st.session_state["messages"],
         stream=True,
     )
